@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>用户中心</title>
+
+    <style>
+        .jz {
+            margin: 0 auto;
+            width: 320px;
+            height: 100px;
+            border: 1px
+        }
+    </style>
+
+</head>
+
+
+<body>
+<div class="jz">
+    店家用户注册
+    <form action="/shop" method="post">
+
+        姓名：<input type="text" name="userName"><br>
+        店名：<input type="text" name="shopName"><br>
+        电话：<input type="text" name="userPhone"><br>
+        地址：<input type="text" name="userAddress"><br>
+
+        <input type="submit" value="提交">
+
+    </form>
+<br>
+    渠道注册
+    <form action="/userRegist" method="post">
+
+        姓名：<input type="text" name="userName"><br>
+
+        电话：<input type="text" name="userPhone"><br>
+
+        <input type="submit" value="提交">
+
+    </form>
+
+    <form action="/phoneCheck.do" method="post">
+
+        <input type="text" name="userPhone" placeholder="要检测的号码">
+        <input type="submit" value="检测">
+
+    </form>
+
+    <form action="/getUsers" method="post">
+        <input name="text" placeholder="查找的姓名或手机号">
+        <input type="submit" value="模糊查找">
+    </form>
+
+
+</div>
+
+
+</body>
+</html>

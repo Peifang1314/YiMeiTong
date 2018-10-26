@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>用户登记</title>
+    <style>
+        .jz {
+            margin: 0 auto;
+            width: 320px;
+            height: 100px;
+            border: 1px
+        }
+    </style>
+
+
+</head>
+<body>
+
+<div class="jz">
+
+    <form action="/customerSave.do" method="post">
+
+        顾客姓名：<input type="text" placeholder="姓名" name="cusName"><br>
+        顾客性别：
+        <select name="cusSex">
+            <option value="0">女</option>
+            <option value="1">男</option>
+        </select><br>
+        顾客联系方式：<input type="text" placeholder="电话" name="cusPhone"><br>
+        到店时间：<input type="date" name="cometime">
+
+        <input type="submit" value="提交">
+
+    </form>
+
+</div>
+
+
+</body>
+</html>

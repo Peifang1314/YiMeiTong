@@ -1,0 +1,89 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.juxing.mapper.UserMapper" >
+  <resultMap id="BaseResultMap" type="com.juxing.pojo.User" >
+    <id column="id" property="id" jdbcType="INTEGER" />
+    <result column="user_id" property="userId" jdbcType="VARCHAR" />
+    <result column="user_name" property="userName" jdbcType="VARCHAR" />
+    <result column="shop_name" property="shopName" jdbcType="VARCHAR" />
+    <result column="user_phone" property="userPhone" jdbcType="VARCHAR" />
+    <result column="user_address" property="userAddress" jdbcType="VARCHAR" />
+    <result column="user_status" property="userStatus" jdbcType="INTEGER" />
+    <result column="user_role" property="userRole" jdbcType="INTEGER" />
+    <result column="service_phone" property="servicePhone" jdbcType="VARCHAR" />
+    <result column="createtime" property="createtime" jdbcType="TIMESTAMP" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    id, user_id, user_name, shop_name, user_phone, user_address, user_status, user_role, 
+    service_phone, createtime
+  </sql>
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Integer" >
+    select 
+    <include refid="Base_Column_List" />
+    from ymt_user
+    where id = #{id,jdbcType=INTEGER}
+  </select>
+
+  <insert id="shopInsert" parameterType="com.juxing.pojo.User" >
+    <selectKey resultType="java.lang.Integer" keyProperty="id" order="AFTER" >
+      SELECT LAST_INSERT_ID()
+    </selectKey>
+    insert into ymt_user (user_id, user_name, shop_name, user_phone, user_address, user_status, user_role, service_phone, createtime)
+    values (#{userId}, #{userName,jdbcType=VARCHAR}, #{shopName,jdbcType=VARCHAR},
+      #{userPhone,jdbcType=VARCHAR}, #{userAddress,jdbcType=VARCHAR}, 1, 1, #{servicePhone,jdbcType=VARCHAR}, now()      )
+  </insert>
+
+  <insert id="userInsert" parameterType="com.juxing.pojo.User" >
+    <selectKey resultType="java.lang.Integer" keyProperty="id" order="AFTER" >
+      SELECT LAST_INSERT_ID()
+    </selectKey>
+    insert into ymt_user (user_id, user_name, shop_name, user_phone, user_address, user_status, user_role, service_phone, createtime)
+    values (#{userId}, #{userName,jdbcType=VARCHAR}, #{shopName,jdbcType=VARCHAR},
+    #{userPhone,jdbcType=VARCHAR}, #{userAddress,jdbcType=VARCHAR}, 1, 2, #{servicePhone,jdbcType=VARCHAR}, now()      )
+  </insert>
+
+  <insert id="insert" parameterType="com.juxing.pojo.User">
+
+    <selectKey resultType="java.lang.Integer" keyProperty="id" order="AFTER" >
+      SELECT LAST_INSERT_ID()
+    </selectKey>
+    insert into ymt_user (user_id, user_name, shop_name, user_phone, user_address, user_status, user_role, service_phone, createtime)
+    values (#{userId}, #{userName,jdbcType=VARCHAR}, #{shopName,jdbcType=VARCHAR},
+    #{userPhone,jdbcType=VARCHAR}, #{userAddress,jdbcType=VARCHAR}, 1, #{userRole}, #{servicePhone,jdbcType=VARCHAR}, now()      )
+
+  </insert>
+
+
+
+  <select id="selectByPhone" resultMap="BaseResultMap">
+    select
+    <include refid="Base_Column_List" />
+    from ymt_user
+    where user_phone = #{phone}
+  </select>
+
+  <select id="selectByText" resultMap="BaseResultMap">
+
+    select
+    <include refid="Base_Column_List" />
+    from ymt_user
+    where user_phone like "%"#{text}"%" or user_name like "%"#{text}"%"
+
+  </select>
+
+
+
+  <update id="updateByPrimaryKey" parameterType="com.juxing.pojo.User" >
+    update ymt_user
+    set user_id = #{userId},
+      user_name = #{userName,jdbcType=VARCHAR},
+      shop_name = #{shopName,jdbcType=VARCHAR},
+      user_phone = #{userPhone,jdbcType=VARCHAR},
+      user_address = #{userAddress,jdbcType=VARCHAR},
+      user_status = #{userStatus,jdbcType=INTEGER},
+      user_role = #{userRole,jdbcType=INTEGER},
+      service_phone = #{servicePhone,jdbcType=VARCHAR},
+      createtime = #{createtime,jdbcType=TIMESTAMP}
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+</mapper>
