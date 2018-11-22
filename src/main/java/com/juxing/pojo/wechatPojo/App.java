@@ -13,4 +13,7 @@ public class App {
 
     public static final String APPSECRET="39fee06a2f186b4ab5e0804107899596";
 
+    //自定义菜单创建接口
+    public static final String CREATE_MENU = "https://api.weixin.qq.com/cgi-bin/menu/create?access_token=ACCESS_TOKEN";
+
 }

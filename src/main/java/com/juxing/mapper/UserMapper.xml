@@ -1,87 +1,95 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
-<mapper namespace="com.juxing.mapper.UserMapper" >
-  <resultMap id="BaseResultMap" type="com.juxing.pojo.mysqlPojo.User" >
-    <id column="id" property="id" jdbcType="INTEGER" />
-    <result column="user_id" property="userId" jdbcType="VARCHAR" />
-    <result column="user_openid" property="userOpenid" jdbcType="VARCHAR" />
-    <result column="user_nickname" property="userNickname" jdbcType="VARCHAR" />
-    <result column="user_headimgurl" property="userHeadimgurl" jdbcType="VARCHAR" />
-    <result column="user_name" property="userName" jdbcType="VARCHAR" />
-    <result column="user_shopname" property="userShopname" jdbcType="VARCHAR" />
-    <result column="user_phone" property="userPhone" jdbcType="VARCHAR" />
-    <result column="user_address" property="userAddress" jdbcType="VARCHAR" />
-    <result column="user_status" property="userStatus" jdbcType="INTEGER" />
-    <result column="user_role" property="userRole" jdbcType="INTEGER" />
-    <result column="service_phone" property="servicePhone" jdbcType="VARCHAR" />
-    <result column="createtime" property="createtime" jdbcType="TIMESTAMP" />
-  </resultMap>
-  <sql id="Base_Column_List" >
+<mapper namespace="com.juxing.mapper.UserMapper">
+    <resultMap id="BaseResultMap" type="com.juxing.pojo.mysqlPojo.User">
+        <id column="id" property="id" jdbcType="INTEGER"/>
+        <result column="user_id" property="userId" jdbcType="VARCHAR"/>
+        <result column="user_openid" property="userOpenid" jdbcType="VARCHAR"/>
+        <result column="user_nickname" property="userNickname" jdbcType="VARCHAR"/>
+        <result column="user_headimgurl" property="userHeadimgurl" jdbcType="VARCHAR"/>
+        <result column="user_name" property="userName" jdbcType="VARCHAR"/>
+        <result column="user_shopname" property="userShopname" jdbcType="VARCHAR"/>
+        <result column="user_phone" property="userPhone" jdbcType="VARCHAR"/>
+        <result column="user_address" property="userAddress" jdbcType="VARCHAR"/>
+        <result column="user_status" property="userStatus" jdbcType="INTEGER"/>
+        <result column="user_role" property="userRole" jdbcType="INTEGER"/>
+        <result column="user_shortUrl" property="userShorturl" jdbcType="VARCHAR"/>
+        <result column="service_phone" property="servicePhone" jdbcType="VARCHAR"/>
+        <result column="createtime" property="createtime" jdbcType="TIMESTAMP"/>
+        <result column="is_sync" property="isSync" jdbcType="INTEGER"/>
+    </resultMap>
+    <sql id="Base_Column_List">
     id, user_id, user_openid, user_nickname, user_headimgurl, user_name, user_shopname, 
-    user_phone, user_address, user_status, user_role, service_phone, createtime
-  </sql>
-  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Integer" >
-    select 
-    <include refid="Base_Column_List" />
-    from ymt_user
-    where id = #{id,jdbcType=INTEGER}
-  </select>
-  
-  <insert id="insert" parameterType="com.juxing.pojo.mysqlPojo.User" >
-    <selectKey resultType="java.lang.Integer" keyProperty="id" order="AFTER" >
-      SELECT LAST_INSERT_ID()
-    </selectKey>
-    insert into ymt_user (user_id, user_openid, user_nickname, 
-      user_headimgurl, user_name, user_shopname, 
-      user_phone, user_address, user_status, 
-      user_role, service_phone, createtime
-      )
-    values (#{userId,jdbcType=INTEGER}, #{userOpenid,jdbcType=VARCHAR}, #{userNickname,jdbcType=VARCHAR}, 
-      #{userHeadimgurl,jdbcType=VARCHAR}, #{userName,jdbcType=VARCHAR}, #{userShopname,jdbcType=VARCHAR}, 
-      #{userPhone,jdbcType=VARCHAR}, #{userAddress,jdbcType=VARCHAR}, 1, 
-      #{userRole,jdbcType=INTEGER}, #{servicePhone,jdbcType=VARCHAR}, now()
-      )
-  </insert>
-  
-  <select id="selectByText" resultMap="BaseResultMap">
-    select
-    <include refid="Base_Column_List" />
-    from ymt_user
-    where user_phone like "%"#{text}"%" or user_name like "%"#{text}"%"
-  </select>
-  
+    user_phone, user_address, user_status, user_role, user_shortUrl, service_phone, createtime, 
+    is_sync
+    </sql>
+    <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Integer">
+        select
+        <include refid="Base_Column_List"/>
+        from ymt_user
+        where id = #{id,jdbcType=INTEGER}
+    </select>
+
+    <insert id="insert" parameterType="com.juxing.pojo.mysqlPojo.User">
+        <selectKey resultType="java.lang.Integer" keyProperty="id" order="AFTER">
+            SELECT LAST_INSERT_ID()
+        </selectKey>
+        insert into ymt_user (user_id, user_openid, user_nickname,
+        user_headimgurl, user_name, user_shopname,
+        user_phone, user_address, user_status,
+        user_role, user_shortUrl, service_phone,
+        createtime, is_sync)
+        values (#{userId,jdbcType=VARCHAR}, #{userOpenid,jdbcType=VARCHAR}, #{userNickname,jdbcType=VARCHAR},
+        #{userHeadimgurl,jdbcType=VARCHAR}, #{userName,jdbcType=VARCHAR}, #{userShopname,jdbcType=VARCHAR},
+        #{userPhone,jdbcType=VARCHAR}, #{userAddress,jdbcType=VARCHAR}, 1,
+        #{userRole,jdbcType=INTEGER}, #{userShorturl,jdbcType=VARCHAR}, #{servicePhone,jdbcType=VARCHAR},
+        now(), 0)
+    </insert>
+
+    <select id="selectByText" resultMap="BaseResultMap">
+        select
+        <include refid="Base_Column_List"/>
+        from ymt_user
+        where user_phone like "%"#{text}"%" or user_name like "%"#{text}"%"
+    </select>
+
     <select id="selectByPhone" resultMap="BaseResultMap">
-    select
-    <include refid="Base_Column_List" />
-    from ymt_user
-    where user_phone = #{phone}
-  </select>
+        select
+        <include refid="Base_Column_List"/>
+        from ymt_user
+        where user_phone = #{phone}
+    </select>
 
-  <select id="selectByOpenid" resultMap="BaseResultMap">
-    select
-    <include refid="Base_Column_List" />
-    from ymt_user
-    where user_openid = #{openid}
-  </select>
+    <select id="selectByOpenid" resultMap="BaseResultMap">
+        select
+        <include refid="Base_Column_List"/>
+        from ymt_user
+        where user_openid = #{openid}
+    </select>
 
-  <select id="selectUnableUser" resultMap="BaseResultMap">
+    <select id="selectUnableUser" resultMap="BaseResultMap">
+        select
+        <include refid="Base_Column_List"/>
+        from ymt_user
+        where user_status=1;
+    </select>
 
-    select
-    <include refid="Base_Column_List" />
-    from ymt_user
-    where user_status=1;
+    <update id="updateUser" parameterType="com.juxing.pojo.mysqlPojo.User">
+        update ymt_user
+        set  user_nickname = #{userNickname,jdbcType=VARCHAR},
+          user_headimgurl = #{userHeadimgurl,jdbcType=VARCHAR}
+        where user_openid = #{userOpenid}
+    </update>
 
-  </select>
-
-  <update id="updataUserstatus" parameterType="com.juxing.pojo.mysqlPojo.User">
+    <update id="updataUserstatus" parameterType="com.juxing.pojo.mysqlPojo.User">
      update ymt_user
      set user_status = 2
      where id = #{id,jdbcType=INTEGER}
-  </update>
+    </update>
 
-  <update id="updateByPrimaryKey" parameterType="com.juxing.pojo.mysqlPojo.User" >
+    <update id="updateByPrimaryKey" parameterType="com.juxing.pojo.mysqlPojo.User">
     update ymt_user
-    set user_id = #{userId,jdbcType=INTEGER},
+    set user_id = #{userId,jdbcType=VARCHAR},
       user_openid = #{userOpenid,jdbcType=VARCHAR},
       user_nickname = #{userNickname,jdbcType=VARCHAR},
       user_headimgurl = #{userHeadimgurl,jdbcType=VARCHAR},
@@ -91,8 +99,10 @@
       user_address = #{userAddress,jdbcType=VARCHAR},
       user_status = #{userStatus,jdbcType=INTEGER},
       user_role = #{userRole,jdbcType=INTEGER},
+      user_shortUrl = #{userShorturl,jdbcType=VARCHAR},
       service_phone = #{servicePhone,jdbcType=VARCHAR},
-      createtime = #{createtime,jdbcType=TIMESTAMP}
+      createtime = #{createtime,jdbcType=TIMESTAMP},
+      is_sync = #{isSync,jdbcType=INTEGER}
     where id = #{id,jdbcType=INTEGER}
   </update>
 </mapper>

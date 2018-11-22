@@ -1,9 +1,6 @@
 package com.juxing.common.util;
 
-import com.juxing.message.resp.Article;
-import com.juxing.message.resp.MusicMessage;
-import com.juxing.message.resp.NewsMessage;
-import com.juxing.message.resp.TextMessage;
+import com.juxing.wechat.message.resp.*;
 import com.thoughtworks.xstream.XStream;
 import org.dom4j.Document;
 import org.dom4j.DocumentException;
@@ -34,7 +31,7 @@ public class WechatMessageUtil {
     /**
      * 图片消息
      */
-    public static final String MESSAtGE_IMAGE = "image";
+    public static final String MESSAGE_IMAGE = "image";
     /**
      * 图文消息
      */
@@ -87,7 +84,7 @@ public class WechatMessageUtil {
     /**
      * 将xml转化为Map集合
      *
-     * @param request
+     * @param request request对象
      * @return
      */
     public static Map<String, String> xmlToMap(HttpServletRequest request) {
@@ -124,12 +121,48 @@ public class WechatMessageUtil {
      * @param textMessage
      * @return
      */
-    public static String textMessageToXml(TextMessage textMessage) {
+    public static String messageToXml(TextMessage textMessage) {
         XStream xstream = new XStream();
         xstream.alias("xml", textMessage.getClass());
         return xstream.toXML(textMessage);
-
     }
+
+    /**
+     * 图片消息对象转换成xml
+     *
+     * @param imageMessage 图片消息对象
+     * @return xml
+     */
+    public static String messageToXml(ImageMessage imageMessage) {
+        XStream xstream = new XStream();
+        xstream.alias("xml", imageMessage.getClass());
+        return xstream.toXML(imageMessage);
+    }
+
+    /**
+     * 语音消息对象转换成xml
+     *
+     * @param voiceMessage 语音消息对象
+     * @return xml
+     */
+    public static String messageToXml(VoiceMessage voiceMessage) {
+        XStream xstream = new XStream();
+        xstream.alias("xml", voiceMessage.getClass());
+        return xstream.toXML(voiceMessage);
+    }
+
+    /**
+     * 视频消息对象转换成xml
+     *
+     * @param videoMessage 视频消息对象
+     * @return xml
+     */
+    public static String messageToXml(VideoMessage videoMessage) {
+        XStream xstream = new XStream();
+        xstream.alias("xml", videoMessage.getClass());
+        return xstream.toXML(videoMessage);
+    }
+
 
     /**
      * 音乐消息对象转换成xml

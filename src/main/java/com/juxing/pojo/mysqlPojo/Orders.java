@@ -2,49 +2,70 @@ package com.juxing.pojo.mysqlPojo;
 
 import java.util.Date;
 
+/**
+ * @Auther: Mr.Liu
+ * @Date: 2018/11/21 10
+ * @Description: 订单的实体类
+ */
+
 public class Orders {
+    //主键
     private Integer id;
-
+    //订单ID
     private String orderId;
-
+    //订单的项目
     private String orderProject;
-
+    //订单的设计师
     private String orderDesigner;
-
+    //订单金额
     private String orderMoney;
-
+    //订单创建者的openID
     private String orderRefer;
-
+    //创建者的ID
     private String orderUserid;
-
+    //创建者的姓名
     private String orderUsername;
-
-    private String orderFatheropenid;
-
-    private String orderFatherid;
-
-    private String orderFathername;
-
+    //创建者父级的openID
+    private String orderFatherOpenid;
+    //创建者父级的ID
+    private String orderFatherId;
+    //创建者父级的姓名
+    private String orderFatherName;
+    //创建者渠道的openID
+    private String orderServiceOpenid;
+    //创建者渠道的ID
+    private String orderServiceId;
+    //创建者渠道的姓名
+    private String orderServiceName;
+    //订单的店名
     private String orderShopname;
-
+    //订单的返款金额
     private String orderDismoney;
-
-    private String orderFatherdismoney;
-
+    //订单父级的的返款金额
+    private String orderFatherDismoney;
+    //订单的创建时间
     private String orderCometime;
-
+    //顾客的ID
     private String cusId;
-
+    //顾客的姓名
     private String cusName;
-
+    //顾客的性别
     private Integer cusSex;
-
+    //顾客的电话
     private String cusPhone;
-
+    //订单的创建时间
     private Date createtime;
-
+    //订单的付款时间
+    private String orderPaytime;
+    //订单的返款时间
+    private String orderDistime;
+    //订单的提交者 1-店家 2-渠道
+    private Integer orderSubstatus;
+    //订单的状态
     private Integer orderStatus;
-
+    //订单的备注信息
+    private String orderNotes;
+    //是否同步
     private Integer isSync;
 
     public Integer getId() {
@@ -111,28 +132,52 @@ public class Orders {
         this.orderUsername = orderUsername == null ? null : orderUsername.trim();
     }
 
-    public String getOrderFatheropenid() {
-        return orderFatheropenid;
+    public String getOrderFatherOpenid() {
+        return orderFatherOpenid;
     }
 
-    public void setOrderFatheropenid(String orderFatheropenid) {
-        this.orderFatheropenid = orderFatheropenid == null ? null : orderFatheropenid.trim();
+    public void setOrderFatherOpenid(String orderFatherOpenid) {
+        this.orderFatherOpenid = orderFatherOpenid == null ? null : orderFatherOpenid.trim();
     }
 
-    public String getOrderFatherid() {
-        return orderFatherid;
+    public String getOrderFatherId() {
+        return orderFatherId;
     }
 
-    public void setOrderFatherid(String orderFatherid) {
-        this.orderFatherid = orderFatherid == null ? null : orderFatherid.trim();
+    public void setOrderFatherId(String orderFatherId) {
+        this.orderFatherId = orderFatherId == null ? null : orderFatherId.trim();
     }
 
-    public String getOrderFathername() {
-        return orderFathername;
+    public String getOrderFatherName() {
+        return orderFatherName;
     }
 
-    public void setOrderFathername(String orderFathername) {
-        this.orderFathername = orderFathername == null ? null : orderFathername.trim();
+    public void setOrderFatherName(String orderFatherName) {
+        this.orderFatherName = orderFatherName == null ? null : orderFatherName.trim();
+    }
+
+    public String getOrderServiceOpenid() {
+        return orderServiceOpenid;
+    }
+
+    public void setOrderServiceOpenid(String orderServiceOpenid) {
+        this.orderServiceOpenid = orderServiceOpenid == null ? null : orderServiceOpenid.trim();
+    }
+
+    public String getOrderServiceId() {
+        return orderServiceId;
+    }
+
+    public void setOrderServiceId(String orderServiceId) {
+        this.orderServiceId = orderServiceId == null ? null : orderServiceId.trim();
+    }
+
+    public String getOrderServiceName() {
+        return orderServiceName;
+    }
+
+    public void setOrderServiceName(String orderServiceName) {
+        this.orderServiceName = orderServiceName == null ? null : orderServiceName.trim();
     }
 
     public String getOrderShopname() {
@@ -151,12 +196,12 @@ public class Orders {
         this.orderDismoney = orderDismoney == null ? null : orderDismoney.trim();
     }
 
-    public String getOrderFatherdismoney() {
-        return orderFatherdismoney;
+    public String getOrderFatherDismoney() {
+        return orderFatherDismoney;
     }
 
-    public void setOrderFatherdismoney(String orderFatherdismoney) {
-        this.orderFatherdismoney = orderFatherdismoney == null ? null : orderFatherdismoney.trim();
+    public void setOrderFatherDismoney(String orderFatherDismoney) {
+        this.orderFatherDismoney = orderFatherDismoney == null ? null : orderFatherDismoney.trim();
     }
 
     public String getOrderCometime() {
@@ -207,12 +252,44 @@ public class Orders {
         this.createtime = createtime;
     }
 
+    public String getOrderPaytime() {
+        return orderPaytime;
+    }
+
+    public void setOrderPaytime(String orderPaytime) {
+        this.orderPaytime = orderPaytime;
+    }
+
+    public String getOrderDistime() {
+        return orderDistime;
+    }
+
+    public void setOrderDistime(String orderDistime) {
+        this.orderDistime = orderDistime;
+    }
+
+    public Integer getOrderSubstatus() {
+        return orderSubstatus;
+    }
+
+    public void setOrderSubstatus(Integer orderSubstatus) {
+        this.orderSubstatus = orderSubstatus;
+    }
+
     public Integer getOrderStatus() {
         return orderStatus;
     }
 
     public void setOrderStatus(Integer orderStatus) {
         this.orderStatus = orderStatus;
+    }
+
+    public String getOrderNotes() {
+        return orderNotes;
+    }
+
+    public void setOrderNotes(String orderNotes) {
+        this.orderNotes = orderNotes == null ? null : orderNotes.trim();
     }
 
     public Integer getIsSync() {
@@ -234,19 +311,26 @@ public class Orders {
                 ", orderRefer='" + orderRefer + '\'' +
                 ", orderUserid='" + orderUserid + '\'' +
                 ", orderUsername='" + orderUsername + '\'' +
-                ", orderFatheropenid='" + orderFatheropenid + '\'' +
-                ", orderFatherid='" + orderFatherid + '\'' +
-                ", orderFathername='" + orderFathername + '\'' +
+                ", orderFatherOpenid='" + orderFatherOpenid + '\'' +
+                ", orderFatherId='" + orderFatherId + '\'' +
+                ", orderFatherName='" + orderFatherName + '\'' +
+                ", orderServiceOpenid='" + orderServiceOpenid + '\'' +
+                ", orderServiceId='" + orderServiceId + '\'' +
+                ", orderServiceName='" + orderServiceName + '\'' +
                 ", orderShopname='" + orderShopname + '\'' +
                 ", orderDismoney='" + orderDismoney + '\'' +
-                ", orderFatherdismoney='" + orderFatherdismoney + '\'' +
+                ", orderFatherDismoney='" + orderFatherDismoney + '\'' +
                 ", orderCometime='" + orderCometime + '\'' +
                 ", cusId='" + cusId + '\'' +
                 ", cusName='" + cusName + '\'' +
                 ", cusSex=" + cusSex +
                 ", cusPhone='" + cusPhone + '\'' +
                 ", createtime=" + createtime +
+                ", orderPaytime='" + orderPaytime + '\'' +
+                ", orderDistime='" + orderDistime + '\'' +
+                ", orderSubstatus=" + orderSubstatus +
                 ", orderStatus=" + orderStatus +
+                ", orderNotes='" + orderNotes + '\'' +
                 ", isSync=" + isSync +
                 '}';
     }

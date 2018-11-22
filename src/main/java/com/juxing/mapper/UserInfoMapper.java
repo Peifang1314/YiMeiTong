@@ -3,7 +3,6 @@ package com.juxing.mapper;
 import com.juxing.pojo.wechatPojo.UserInfo;
 
 public interface UserInfoMapper {
-    int deleteByPrimaryKey(Integer id);
 
     int insert(UserInfo record);
 
@@ -11,8 +10,18 @@ public interface UserInfoMapper {
 
     int updateByPrimaryKey(UserInfo record);
 
-    int updateUser(UserInfo userInfo);
+    /**
+     * 更新用户的微信数据
+     * @param userInfo
+     * @return
+     */
+    int updateUserInfo(UserInfo userInfo);
 
+    /**
+     * 通过openid查找用户的微信数据
+     * @param openid
+     * @return
+     */
     UserInfo selectByOpenid(String openid);
 
 

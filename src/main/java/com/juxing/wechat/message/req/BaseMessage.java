@@ -1,4 +1,4 @@
-package com.juxing.message.req;
+package com.juxing.wechat.message.req;
 
 /**
  * @Auther: Mr.Liu

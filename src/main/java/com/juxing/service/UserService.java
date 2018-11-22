@@ -28,12 +28,20 @@ public interface UserService {
      */
     RespObj getUsers(SearchRequest searchRequest);
 
+
     /**
-     * 更新或保存用户微信数据
+     * 用户第一次登录，存储用户的微信数据
      * @param userInfo
      * @return
      */
-    RespObj saveOrUpdateUserinfo(UserInfo userInfo) throws Exception;
+    RespObj saveUserinfo(UserInfo userInfo);
+
+    /**
+     * 更新用户的头像、昵称
+     * @param userInfo
+     * @return 用户对象
+     */
+    User updateUser(UserInfo userInfo);
 
     /**
      * 所有未审核的用户

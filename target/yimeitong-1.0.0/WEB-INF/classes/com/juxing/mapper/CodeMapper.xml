@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.juxing.mapper.CodeMapper" >
+  <resultMap id="BaseResultMap" type="com.juxing.pojo.mysqlPojo.Code" >
+    <id column="id" property="id" jdbcType="INTEGER" />
+    <result column="code_key" property="codeKey" jdbcType="VARCHAR" />
+    <result column="code_name" property="codeName" jdbcType="VARCHAR" />
+    <result column="code_value" property="codeValue" jdbcType="INTEGER" />
+    <result column="code_type" property="codeType" jdbcType="VARCHAR" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    id, code_key, code_name, code_value, code_type
+  </sql>
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Integer" >
+    select 
+    <include refid="Base_Column_List" />
+    from ymt_code
+    where id = #{id,jdbcType=INTEGER}
+  </select>
+
+  <select id="selectByKey" resultMap="BaseResultMap">
+    select
+    <include refid="Base_Column_List" />
+    from ymt_code
+    where code_key = #{key}
+  </select>
+
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer" >
+    delete from ymt_code
+    where id = #{id,jdbcType=INTEGER}
+  </delete>
+  <insert id="insert" parameterType="com.juxing.pojo.mysqlPojo.Code" >
+    <selectKey resultType="java.lang.Integer" keyProperty="id" order="AFTER" >
+      SELECT LAST_INSERT_ID()
+    </selectKey>
+    insert into ymt_code (code_key, code_name, code_value, 
+      code_type)
+    values (#{codeKey,jdbcType=VARCHAR}, #{codeName,jdbcType=VARCHAR}, #{codeValue,jdbcType=INTEGER}, 
+      #{codeType,jdbcType=VARCHAR})
+  </insert>
+
+
+  <update id="updateByPrimaryKey" parameterType="com.juxing.pojo.mysqlPojo.Code" >
+    update ymt_code
+    set code_key = #{codeKey,jdbcType=VARCHAR},
+      code_name = #{codeName,jdbcType=VARCHAR},
+      code_value = #{codeValue,jdbcType=INTEGER},
+      code_type = #{codeType,jdbcType=VARCHAR}
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+</mapper>

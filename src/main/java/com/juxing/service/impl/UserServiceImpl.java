@@ -20,6 +20,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Objects;
 
 /**
  * @Auther: Mr.Liu
@@ -39,8 +40,6 @@ public class UserServiceImpl implements UserService {
     @Autowired
     private UserInfoMapper userInfoMapper;
 
-    @Autowired
-    private RelationsMapper relationsMapper;
 
 
     /**
@@ -86,50 +85,37 @@ public class UserServiceImpl implements UserService {
         }
     }
 
-    /**
-     * 存储或更新用户的微信数据
-     *
-     * @param userInfo
-     * @return
-     */
+
     @Override
-    public RespObj saveOrUpdateUserinfo(UserInfo userInfo) throws Exception {
-        //  存储用户信息到数据库
-        // 1、判断用户是否存在，存在就更新数据并返回ok
-        //  2、不存在就存储
-        String openid = userInfo.getOpenid();
-        //获得session值，存储到数据库内对比操纵
-        String session = SessionUtil.getSession();
-        System.out.println("session:" + session);
-        //数据库内查找的user
-        UserInfo userInfo1 = userInfoMapper.selectByOpenid(openid);
-        if (null == userInfo1) {
-            //用户不存在，存储用户
-            System.out.println("用户微信信息不存在，进行存储");
-            userInfo.setSession(session);
-            if (userInfoMapper.insert(userInfo) > 0) {
-                return new RespObj(200, "success", 6, userInfo);
-            } else {
-                return new RespObj(800, "存储未成功", 0, null);
-            }
-        } else {
-            //用户存在，更新
-            System.out.println("用户存在，进行更新");
-            userInfo.setSession(session);
-            if (userInfoMapper.updateUser(userInfo) > 0) {
-//                //将返回数据转为byte数组
-//                byte[] bytes = userInfo.toString().getBytes();
-//                //公钥加密
-//                byte[] obj = RsaUtil.publicEncrypt(bytes, RsaKey.PUBLICKEY);
-                return new RespObj(200, "用户更新", 6, userInfo);
-            } else {
-//                //将返回数据转为byte数组
-//                byte[] bytes = user.toString().getBytes();
-//                //公钥加密
-//                byte[] obj = RsaUtil.publicEncrypt(bytes, RsaKey.PUBLICKEY);
-                return new RespObj(200, "更新失败", 0, userInfo);
-            }
+    public RespObj saveUserinfo(UserInfo userInfo) {
+        if (userInfoMapper.insert(userInfo)>0){
+            return new RespObj(200,"第一次使用，微信数据存储",6,userInfo);
+        }else {
+            return new RespObj(800,"微信数据存储失败",0,null);
         }
+    }
+
+    @Override
+    public User updateUser(UserInfo userInfo) {
+        User user = null;
+        //1、更新数据内的用户微信数据
+        userInfoMapper.updateUserInfo(userInfo);
+        //2、更新用户的昵称、头像等可变信息
+        //判断用户的角色，店家改姓名，渠道不改姓名
+        user = userMapper.selectByOpenid(userInfo.getUserOpenid());
+        if (Objects.equals(1,user.getUserRole())){
+            //用户角色为1--店家，改昵称、头像、姓名
+            user.setUserNickname(userInfo.getNickname());
+            user.setUserHeadimgurl(userInfo.getHeadimgurl());
+            user.setUserName(userInfo.getNickname());
+            userMapper.updateUser(user);
+        }else {
+            //用户角色为2--渠道，改昵称、头像
+            user.setUserNickname(userInfo.getNickname());
+            user.setUserHeadimgurl(userInfo.getHeadimgurl());
+            userMapper.updateUser(user);
+        }
+        return userMapper.selectByOpenid(userInfo.getUserOpenid());
     }
 
     /**
@@ -156,27 +142,7 @@ public class UserServiceImpl implements UserService {
         }
     }
 
-    /**
-     * 验证码发送
-     *
-     * @param phoneCode
-     * @return
-     */
-    @Override
-    public RespObj getPhoneCode(PhoneCode phoneCode) {
-        String phone = phoneCode.getPhone();
-        int code = RandUtil.getRandNum();
 
-        String smsContent = "【巨星集团】您的验证码为" + code + "，请于2分钟内正确输入，如非本人操作，请忽略此短信。";
-        IndustrySMS.execute(phone, smsContent);
-
-        phoneCode.setCode(code);
-        if (phoneCodeMapper.insert(phoneCode) > 0) {
-            return new RespObj(200, "success", 1, code);
-        } else {
-            return new RespObj(800, "error", 0);
-        }
-    }
 
 
     @Override
@@ -213,4 +179,25 @@ public class UserServiceImpl implements UserService {
         }
     }
 
+    /**
+     * 验证码发送
+     *
+     * @param phoneCode
+     * @return
+     */
+    @Override
+    public RespObj getPhoneCode(PhoneCode phoneCode) {
+        String phone = phoneCode.getPhone();
+        int code = RandUtil.getRandNum();
+
+        String smsContent = "【巨星集团】您的验证码为" + code + "，请于2分钟内正确输入，如非本人操作，请忽略此短信。";
+        IndustrySMS.execute(phone, smsContent);
+
+        phoneCode.setCode(code);
+        if (phoneCodeMapper.insert(phoneCode) > 0) {
+            return new RespObj(200, "success", 1, code);
+        } else {
+            return new RespObj(800, "error", 0);
+        }
+    }
 }

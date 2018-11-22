@@ -1,24 +1,25 @@
 package com.juxing.controller;
 
+import com.alibaba.fastjson.JSONObject;
+import com.juxing.common.util.CommonUtil;
+import com.juxing.common.util.SHA1;
 import com.juxing.common.util.SignUtil;
-import com.juxing.common.util.WXPayUtils;
-import com.juxing.common.util.WechatMessageUtil;
-import com.juxing.common.vo.Resp;
-import com.juxing.message.resp.TextMessage;
-import com.juxing.pojo.mysqlPojo.Relations;
+import com.juxing.common.vo.RespObj;
+import com.juxing.pojo.wechatPojo.App;
+import com.juxing.pojo.wechatPojo.MyToken;
+import com.juxing.service.MyTokenService;
+import com.juxing.service.WechatCoreService;
+import org.apache.commons.lang3.RandomStringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 
-import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.*;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Objects;
 
 import com.juxing.service.RelaService;
 import org.springframework.web.bind.annotation.ResponseBody;
@@ -36,6 +37,12 @@ public class WxInfoController {
 
     @Autowired
     private RelaService relaService;
+
+    @Autowired
+    private WechatCoreService wechatService;
+
+    @Autowired
+    private MyTokenService myTokenService;
 
 
     /**
@@ -62,212 +69,63 @@ public class WxInfoController {
         out = null;
     }
 
+    /**
+     * 接收微信的请求数据，对数据做出响应
+     *
+     * @param request
+     * @param response
+     * @throws IOException
+     */
     @RequestMapping(value = "/index", method = {RequestMethod.POST})
     @ResponseBody
-    public String doPost(HttpServletRequest request, HttpServletResponse response)
+    public void doPost(HttpServletRequest request, HttpServletResponse response)
             throws IOException {
 
-        request.setCharacterEncoding("utf-8");
-        response.setContentType("text/xml;charset=utf-8");
+        request.setCharacterEncoding("UTF-8");
+        response.setCharacterEncoding("UTF-8");
+//        response.setContentType("text/xml;charset=utf-8");
+//        response.setHeader("content-type","text/html;charset=UTF-8");
         System.out.println("post请求进入");
-//        PrintWriter out = response.getWriter();
+        PrintWriter out = response.getWriter();
 
-        TextMessage textMessage = null;
+        String parseXml = wechatService.processRequest(request);
+        out.print(parseXml);
+        out.close();
+    }
 
-        try {
-            //解析微信的XML数据
-            Map<String, String> map = WechatMessageUtil.xmlToMap(request);
+    @RequestMapping(value = "/jsApi",method = {RequestMethod.POST})
+    @ResponseBody
+    public String jsApi() {
+        //1、获取access_token
+        RespObj ret = myTokenService.getMyToken();
+        MyToken token = (MyToken) ret.getObj();
+        String accessToken = token.getAccessToken();
+        //2、获取jsApiTicket
+        Map ticketMap = CommonUtil.JsapiTicket(accessToken);
+        String ticket = ticketMap.get("ticket").toString();
+        //3、随即字符串、时间戳
+        String noncestr = RandomStringUtils.randomAlphanumeric(12);
+        //时间戳
+        String timestamp = String.valueOf(System.currentTimeMillis() / 1000);
+        //4 获取url
+        String url = "http://crm.jmzxyy.cn:6082/#/hotel";
+        //5、将参数排序并拼接字符串
+        String str = "jsapi_ticket=" + ticket + "&noncestr=" + noncestr + "&timestamp=" + timestamp + "&url=" + url;
 
-            String toUserName = map.get("ToUserName");
-            //当前用户的openid
-            String fromUserName = map.get("FromUserName");
-            String msgType = map.get("MsgType");
-            String picUrl = map.get("PicUrl");
-            String content = map.get("Content");
-            String event = map.get("Event");
-            //携带的参数，上级的openid
-            String eventKey = map.get("EventKey");
-            String nickname = map.get("nick_name");
-            System.out.println("携带参数：" + eventKey);
+        //6、将字符串进行sha1加密
+        String signature = SHA1.encode(str);
+        Map<String, String> map = new HashMap();
+        map.put("timestamp", timestamp);
+        map.put("accessToken", accessToken);
+        map.put("ticket", ticket);
+        map.put("noncestr", noncestr);
+        map.put("signature", signature);
+        map.put("appId",App.APPID);
 
-            // 普通消息
-            if ("text".equals(msgType)) { // 文本消息
-                // todo 处理文本消息
-            } else if ("image".equals(msgType)) { // 图片消息
-                // todo 处理图片消息
-            } else if ("voice".equals(msgType)) { //语音消息
-                // todo 处理语音消息
-            } else if ("video".equals(msgType)) { // 视频消息
-                // todo 处理视频消息
-            } else if ("shortvideo".equals(msgType)) { // 小视频消息
-                // todo 处理小视频消息
-            } else if ("location".equals(msgType)) { // 地理位置消息
-                // todo 处理地理位置消息
-            } else if ("link".equals(msgType)) { // 链接消息
-                // todo 处理链接消息
-            } else if ("event".equals(msgType)) { // 事件消息
-                // 区分事件推送
-                if ("subscribe".equals(event)) {
-                    // 订阅事件 或 未关注扫描二维码事件
-                    //返回消息，text类型
-                    textMessage = new TextMessage();
-                    textMessage.setToUserName(fromUserName);
-                    textMessage.setFromUserName(toUserName);
-                    textMessage.setCreateTime(new Date().getTime());
-                    textMessage.setMsgType("text");
+        String respStr = JSONObject.toJSONString(map);
 
-                    //1、判断二维码来源（1--店家、2--渠道负责人）
-                    //截取携带的参数 trueKey
-                    String trueKey = eventKey.substring(8);
-                    char a = trueKey.charAt(0);
-                    String first = String.valueOf(a);
-                    if (Objects.equals("1", first)) {
-                        //来源是店家
-                        Relations relation = new Relations();
-                        //设置上下级关系
-                        relation.setUserId(fromUserName);
-                        relation.setFatherId(eventKey.substring(9));
-                        //1、判断用户关系是否存在
-                        Resp ret = relaService.getRelation(fromUserName);
-                        //1.1 不存在，就存储
-                        if (ret.getStatus() == 404) {
-                            //存储新用户上下级关系
-                            Resp resp = relaService.saveFather(relation);
-                            if (resp.getStatus() == 800) {
-                                textMessage.setContent("error");
-                            } else {
-                                textMessage.setContent("http://m.superstar.vc");
-                            }
-                        } else {
-                            //1.2 存在就返回注册网址
-                            textMessage.setContent("http://m.superstar.vc");
-                        }
-                    } else if (Objects.equals(2, first)) {
-                        //来源是渠道，渠道关系形成
-                        Relations relation = new Relations();
-                        //设置渠道关系
-                        relation.setUserId(fromUserName);
-                        relation.setServiceId(eventKey.substring(1));
+        return respStr;
 
-                        //1、判断关系是否存在
-                        Resp ret = relaService.getRelation(fromUserName);
-                        //1.1 用户关系不存在，就存储
-                        if (ret.getStatus() == 404) {
-                            //存储新用户的渠道关系
-                            Resp resp = relaService.saveService(relation);
-                            if (resp.getStatus() == 800) {
-                                textMessage.setContent("error");
-                            } else {
-                                textMessage.setContent("http://m.superstar.vc");
-                            }
-                        } else {
-                            //1.2 用户关系存在
-                            //1.2.1 判断渠道关系是否存在
-                            Resp ret2 = relaService.getSerRelation(fromUserName);
-                            if (ret2.getStatus() == 404) {
-                                // 渠道关系不存在，进行存储
-                                Resp ret3 = relaService.updateSerRelation(relation);
-                                if (ret3.getStatus() == 800) {
-                                    textMessage.setContent("error");
-                                } else {
-                                    //渠道关系存储成功
-                                    textMessage.setContent("http://m.superstar.vc");
-                                }
-                            } else {
-                                //渠道关系存在
-                                textMessage.setContent("http://m.superstar.vc");
-                            }
-                        }
-                    }
-
-                } else if ("unsubscribe".equals(event)) { // 取消订阅事件
-                    // todo 处理取消订阅事件
-                } else if ("SCAN".equals(event)) {
-                    // 已关注扫描二维码事件
-                    //返回消息，text类型
-                    textMessage = new TextMessage();
-                    textMessage.setToUserName(fromUserName);
-                    textMessage.setFromUserName(toUserName);
-                    textMessage.setCreateTime(new Date().getTime());
-                    textMessage.setMsgType("text");
-
-                    //1、判断二维码来源（1--店家、2--渠道负责人）
-                    char a = eventKey.charAt(0);
-                    String first = String.valueOf(a);
-                    if (Objects.equals("1", first)) {
-                        //来源是店家
-                        Relations relation = new Relations();
-                        //设置上下级关系
-                        relation.setUserId(fromUserName);
-                        relation.setFatherId(eventKey.substring(1));
-                        //1、判断用户关系是否存在
-                        Resp ret = relaService.getRelation(fromUserName);
-                        //1.1 不存在，就存储
-                        if (ret.getStatus() == 404) {
-                            //存储新用户上下级关系
-                            Resp resp = relaService.saveFather(relation);
-                            if (resp.getStatus() == 800) {
-                                textMessage.setContent("error");
-                            } else {
-                                textMessage.setContent("http://m.superstar.vc");
-                            }
-                        } else {
-                            //1.2 存在就返回注册网址
-                            textMessage.setContent("http://m.superstar.vc");
-                        }
-                    } else if (Objects.equals(2, first)) {
-                        //来源是渠道，渠道关系形成
-                        Relations relation = new Relations();
-                        //设置渠道关系
-                        relation.setUserId(fromUserName);
-                        relation.setServiceId(eventKey.substring(1));
-
-                        //1、判断关系是否存在
-                        Resp ret = relaService.getRelation(fromUserName);
-                        //1.1 用户关系不存在，就存储
-                        if (ret.getStatus() == 404) {
-                            //存储新用户的渠道关系
-                            Resp resp = relaService.saveService(relation);
-                            if (resp.getStatus() == 800) {
-                                textMessage.setContent("error");
-                            } else {
-                                textMessage.setContent("http://m.superstar.vc");
-                            }
-                        } else {
-                            //1.2 用户关系存在
-                            //1.2.1 判断渠道关系是否存在
-                            Resp ret2 = relaService.getSerRelation(fromUserName);
-                            if (ret2.getStatus() == 404) {
-                                // 渠道关系不存在，进行存储
-                                Resp ret3 = relaService.updateSerRelation(relation);
-                                if (ret3.getStatus() == 800) {
-                                    textMessage.setContent("error");
-                                } else {
-                                    //渠道关系存储成功
-                                    textMessage.setContent("http://m.superstar.vc");
-                                }
-                            } else {
-                                //渠道关系存在
-                                textMessage.setContent("http://m.superstar.vc");
-                            }
-                        }
-
-                    }
-                } else if ("LOCATION".equals(event)) { // 上报地理位置事件
-                    // todo 处理上报地理位置事件
-                } else if ("CLICK".equals(event)) { // 点击菜单拉取消息时的事件推送事件
-                    // todo 处理点击菜单拉取消息时的事件推送事件
-                } else if ("VIEW".equals(event)) { // 点击菜单跳转链接时的事件推送
-                    // todo 处理点击菜单跳转链接时的事件推送
-                }
-            }
-        } catch (Exception e) {
-            System.out.println(e.getMessage());
-            e.printStackTrace();
-        } finally {
-//            out.close();
-        }
-        return WechatMessageUtil.textMessageToXml(textMessage);
     }
 
 

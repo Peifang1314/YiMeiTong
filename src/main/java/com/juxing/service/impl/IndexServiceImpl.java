@@ -136,7 +136,7 @@ public class IndexServiceImpl implements IndexService {
             j = 0;
         } else {
             for (Orders order : ordersList1) {
-                j = j + Integer.valueOf(order.getOrderFatherdismoney());
+                j = j + Integer.valueOf(order.getOrderFatherDismoney());
             }
         }
         //总收益

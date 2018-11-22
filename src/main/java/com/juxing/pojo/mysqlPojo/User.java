@@ -4,30 +4,34 @@ import java.util.Date;
 
 public class User {
     private Integer id;
-    //用户ID
+
     private String userId;
-    //用户微信openid
+
     private String userOpenid;
-    //用户昵称
+
     private String userNickname;
-    //用户头像地址
+
     private String userHeadimgurl;
-    //用户名字
+
     private String userName;
-    //用户店名
+
     private String userShopname;
-    //用户电话
+
     private String userPhone;
-    //用户商铺地址
+
     private String userAddress;
-    //用户状态
+
     private Integer userStatus;
-    //用户角色
+
     private Integer userRole;
-    //店家服务热线
+
+    private String userShorturl;
+
     private String servicePhone;
-    //创建时间
+
     private Date createtime;
+
+    private Integer isSync;
 
     public Integer getId() {
         return id;
@@ -42,7 +46,7 @@ public class User {
     }
 
     public void setUserId(String userId) {
-        this.userId = userId;
+        this.userId = userId == null ? null : userId.trim();
     }
 
     public String getUserOpenid() {
@@ -117,6 +121,14 @@ public class User {
         this.userRole = userRole;
     }
 
+    public String getUserShorturl() {
+        return userShorturl;
+    }
+
+    public void setUserShorturl(String userShorturl) {
+        this.userShorturl = userShorturl == null ? null : userShorturl.trim();
+    }
+
     public String getServicePhone() {
         return servicePhone;
     }
@@ -133,22 +145,11 @@ public class User {
         this.createtime = createtime;
     }
 
-    @Override
-    public String toString() {
-        return "User{" +
-                "id=" + id +
-                ", userId='" + userId + '\'' +
-                ", userOpenid='" + userOpenid + '\'' +
-                ", userNickname='" + userNickname + '\'' +
-                ", userHeadimgurl='" + userHeadimgurl + '\'' +
-                ", userName='" + userName + '\'' +
-                ", userShopname='" + userShopname + '\'' +
-                ", userPhone='" + userPhone + '\'' +
-                ", userAddress='" + userAddress + '\'' +
-                ", userStatus=" + userStatus +
-                ", userRole=" + userRole +
-                ", servicePhone='" + servicePhone + '\'' +
-                ", createtime=" + createtime +
-                '}';
+    public Integer getIsSync() {
+        return isSync;
+    }
+
+    public void setIsSync(Integer isSync) {
+        this.isSync = isSync;
     }
 }

@@ -1,11 +1,11 @@
 package com.juxing.pojo.wechatPojo;
 
-
+import java.util.Date;
 
 public class UserInfo {
     private Integer id;
 
-    private String openid;
+    private String userOpenid;
 
     private String nickname;
 
@@ -21,6 +21,8 @@ public class UserInfo {
 
     private String session;
 
+    private Date createtime;
+
     public Integer getId() {
         return id;
     }
@@ -29,12 +31,12 @@ public class UserInfo {
         this.id = id;
     }
 
-    public String getOpenid() {
-        return openid;
+    public String getUserOpenid() {
+        return userOpenid;
     }
 
-    public void setOpenid(String openid) {
-        this.openid = openid == null ? null : openid.trim();
+    public void setUserOpenid(String userOpenid) {
+        this.userOpenid = userOpenid == null ? null : userOpenid.trim();
     }
 
     public String getNickname() {
@@ -93,18 +95,11 @@ public class UserInfo {
         this.session = session == null ? null : session.trim();
     }
 
-    @Override
-    public String toString() {
-        return "UserInfo{" +
-                "id=" + id +
-                ", openid='" + openid + '\'' +
-                ", nickname='" + nickname + '\'' +
-                ", sex=" + sex +
-                ", country='" + country + '\'' +
-                ", province='" + province + '\'' +
-                ", city='" + city + '\'' +
-                ", headimgurl='" + headimgurl + '\'' +
-                ", session='" + session + '\'' +
-                '}';
+    public Date getCreatetime() {
+        return createtime;
+    }
+
+    public void setCreatetime(Date createtime) {
+        this.createtime = createtime;
     }
 }

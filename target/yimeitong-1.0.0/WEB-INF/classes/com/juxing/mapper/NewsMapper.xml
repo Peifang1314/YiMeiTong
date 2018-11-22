@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.juxing.mapper.NewsMapper">
+    <resultMap id="BaseResultMap" type="com.juxing.pojo.mysqlPojo.News">
+        <id column="id" property="id" jdbcType="INTEGER"/>
+        <result column="news_id" property="newsId" jdbcType="VARCHAR"/>
+        <result column="news_title" property="newsTitle" jdbcType="VARCHAR"/>
+        <result column="news_content" property="newsContent" jdbcType="VARCHAR"/>
+        <result column="news_createtime" property="newsCreatetime" jdbcType="TIMESTAMP"/>
+    </resultMap>
+    <sql id="Base_Column_List">
+    id, news_id, news_title, news_content, news_createtime
+  </sql>
+    <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Integer">
+        select
+        <include refid="Base_Column_List"/>
+        from ymt_news
+        where id = #{id,jdbcType=INTEGER}
+    </select>
+
+    <select id="selectAll" resultMap="BaseResultMap">
+        select
+        <include refid="Base_Column_List"/>
+        from ymt_news
+        ORDER BY news_createtime desc
+        LIMIT 10 offset ${(page-1)*10};
+    </select>
+
+    <select id="selectThree" resultMap="BaseResultMap">
+        select
+        <include refid="Base_Column_List"/>
+        from ymt_news
+        ORDER BY news_createtime desc
+        limit 3
+    </select>
+
+    <select id="selectAllNews" resultMap="BaseResultMap">
+        select
+        <include refid="Base_Column_List"/>
+        from ymt_news
+    </select>
+
+    <insert id="insert" parameterType="com.juxing.pojo.mysqlPojo.News">
+        <selectKey resultType="java.lang.Integer" keyProperty="id" order="AFTER">
+            SELECT LAST_INSERT_ID()
+        </selectKey>
+        insert into ymt_news (news_id, news_title, news_content,
+        news_createtime)
+        values (#{newsId,jdbcType=VARCHAR}, #{newsTitle,jdbcType=VARCHAR}, #{newsContent,jdbcType=VARCHAR},
+        #{newsCreatetime,jdbcType=TIMESTAMP})
+    </insert>
+
+
+    <update id="updateByPrimaryKey" parameterType="com.juxing.pojo.mysqlPojo.News">
+    update ymt_news
+    set news_id = #{newsId,jdbcType=VARCHAR},
+      news_title = #{newsTitle,jdbcType=VARCHAR},
+      news_content = #{newsContent,jdbcType=VARCHAR},
+      news_createtime = #{newsCreatetime,jdbcType=TIMESTAMP}
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+</mapper>

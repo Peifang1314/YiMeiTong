@@ -24,6 +24,10 @@ public interface UserMapper {
     //更改用户状态
     int updataUserstatus(User user);
 
+    //更改用户的信息
+    int updateUser(User user);
+
+
     User selectByPrimaryKey(Integer id);
     int updateByPrimaryKey(User record);
 }

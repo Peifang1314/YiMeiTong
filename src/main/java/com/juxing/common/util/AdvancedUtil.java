@@ -9,6 +9,7 @@ import org.slf4j.LoggerFactory;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Objects;
 
 /**
  * @Auther: Mr.Liu
@@ -63,7 +64,7 @@ public class AdvancedUtil {
      *
      * @param accessToken 网页授权接口调用凭证
      * @param openId      用户标识
-     * @return SNSUserInfo
+     * @return UserInfo 用户的微信数据
      */
     public static UserInfo getUserInfo(String accessToken, String openId) {
         UserInfo userInfo = null;
@@ -80,7 +81,7 @@ public class AdvancedUtil {
             try {
                 userInfo = new UserInfo();
                 // 用户的标识
-                userInfo.setOpenid(jsonObject.getString("openid"));
+                userInfo.setUserOpenid(jsonObject.getString("openid"));
                 // 昵称
                 userInfo.setNickname(jsonObject.getString("nickname"));
                 // 性别（1是男性，2是女性，0是未知）
@@ -110,8 +111,9 @@ public class AdvancedUtil {
 
     /**
      * 获取ticket，用来换取带参数二维码地址
-     *
-     * @param outputStr
+     * @param token 令牌
+     * @param outputStr 数据
+     * @return
      */
     public static Ticket getTicket(String token, String outputStr) {
         Ticket ticket = null;
@@ -126,7 +128,12 @@ public class AdvancedUtil {
         if (null != jsonObject) {
             ticket = new Ticket();
             ticket.setTicket(jsonObject.getString("ticket"));
-            ticket.setExpire_seconds(jsonObject.getInteger("expire_seconds"));
+            //永久二维码的expire_seconds属性为null
+            if (Objects.equals(null,jsonObject.getInteger("expire_seconds"))){
+                ticket.setExpire_seconds(0);
+            }else {
+                ticket.setExpire_seconds(jsonObject.getInteger("expire_seconds"));
+            }
             ticket.setUrl("url");
             return ticket;
         } else {

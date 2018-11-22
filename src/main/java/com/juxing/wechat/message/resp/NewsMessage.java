@@ -1,33 +1,32 @@
-package com.juxing.message.resp;
+package com.juxing.wechat.message.resp;
 
 import java.util.List;
 
 /**
- * @Auther: Mr.Liu
- * @Date: 2018/11/15 14
- * @Description:
- *     原文：https://blog.csdn.net/lyq8479/article/details/8949088
+ * 文本消息
+ * 
+ * @author liufeng
+ * @date 2013-09-11
  */
 public class NewsMessage extends BaseMessage {
-    // 图文消息个数，限制为10条以内
-    private int ArticleCount;
-    // 多条图文消息信息，默认第一个item为大图
-    private List<Article> Articles;
+	// 图文消息个数，限制为10条以内
+	private int ArticleCount;
+	// 多条图文消息信息，默认第一个item为大图
+	private List<Article> Articles;
 
-    public int getArticleCount() {
-        return ArticleCount;
-    }
+	public int getArticleCount() {
+		return ArticleCount;
+	}
 
-    public void setArticleCount(int articleCount) {
-        ArticleCount = articleCount;
-    }
+	public void setArticleCount(int articleCount) {
+		ArticleCount = articleCount;
+	}
 
-    public List<Article> getArticles() {
-        return Articles;
-    }
+	public List<Article> getArticles() {
+		return Articles;
+	}
 
-    public void setArticles(List<Article> articles) {
-        Articles = articles;
-    }
-
+	public void setArticles(List<Article> articles) {
+		Articles = articles;
+	}
 }
