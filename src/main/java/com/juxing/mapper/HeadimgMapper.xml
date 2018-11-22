@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.juxing.mapper.HeadimgMapper" >
+  <resultMap id="BaseResultMap" type="com.juxing.pojo.mysqlPojo.Headimg" >
+    <id column="id" property="id" jdbcType="INTEGER" />
+    <result column="src" property="src" jdbcType="VARCHAR" />
+    <result column="createtime" property="createtime" jdbcType="TIMESTAMP" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    id, src, createtime
+  </sql>
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Integer" >
+    select 
+    <include refid="Base_Column_List" />
+    from ymt_headimg
+    where id = #{id,jdbcType=INTEGER}
+  </select>
+  
+  <select id="selectAllByTime" resultMap="BaseResultMap">
+    select
+    <include refid="Base_Column_List" />
+    from ymt_headimg
+    order by createtime desc
+    limit 3
+  </select>
+  
+  
+  <insert id="insert" parameterType="com.juxing.pojo.mysqlPojo.Headimg" >
+    <selectKey resultType="java.lang.Integer" keyProperty="id" order="AFTER" >
+      SELECT LAST_INSERT_ID()
+    </selectKey>
+    insert into ymt_headimg (src, createtime)
+    values (#{src,jdbcType=VARCHAR}, #{createtime,jdbcType=TIMESTAMP})
+  </insert>
+
+ 
+  <update id="updateByPrimaryKey" parameterType="com.juxing.pojo.mysqlPojo.Headimg" >
+    update ymt_headimg
+    set src = #{src,jdbcType=VARCHAR},
+      createtime = #{createtime,jdbcType=TIMESTAMP}
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+</mapper>

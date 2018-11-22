@@ -1,35 +1,42 @@
 package com.juxing.controller;
 
-import com.juxing.common.vo.R;
-import com.juxing.pojo.News;
+import com.juxing.common.vo.Resp;
+import com.juxing.common.vo.RespObj;
+import com.juxing.pojo.mysqlPojo.News;
 import com.juxing.service.NewsServcie;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+
+import javax.servlet.http.HttpServletRequest;
 
 /**
  * @Auther: Mr.Liu
  * @Date: 2018/10/25 14
- * @Description:
+ * @Description: 新闻中心
  */
 
 
 @RestController
+@RequestMapping("/api")
 public class NewsController {
 
     @Autowired
     private NewsServcie newsServcie;
 
-    @PostMapping("/newsSave")
-    private R newsSave(News news){
+    @PostMapping("/api/newsSave")
+    private Resp newsSave(News news){
         return newsServcie.newsSave(news);
     }
 
-    @GetMapping("getAllNews")
-    private R getAllNews(){
-        return newsServcie.getAllNews();
+    /**
+     * 获得新闻列表
+     * @return
+     */
+    @GetMapping("/getAllNews")
+    private RespObj getAllNews(HttpServletRequest request){
+        Integer page = Integer.valueOf(request.getParameter("page"));
+        System.out.println("page:"+page);
+        return newsServcie.getAllNews(page);
     }
 
 }

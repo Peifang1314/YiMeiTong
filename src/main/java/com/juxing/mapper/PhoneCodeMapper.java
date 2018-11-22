@@ -1,10 +1,8 @@
 package com.juxing.mapper;
 
-import com.juxing.pojo.PhoneCode;
-import org.apache.ibatis.annotations.Param;
+import com.juxing.pojo.mysqlPojo.PhoneCode;
 
 public interface PhoneCodeMapper {
-    int deleteByPrimaryKey(Integer id);
 
     int insert(PhoneCode record);
 

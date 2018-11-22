@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.juxing.mapper.MyTokenMapper" >
+  <resultMap id="BaseResultMap" type="com.juxing.pojo.wechatPojo.MyToken" >
+    <id column="id" property="id" jdbcType="INTEGER" />
+    <result column="access_Token" property="accessToken" jdbcType="VARCHAR" />
+    <result column="expiresIn" property="expiresin" jdbcType="INTEGER" />
+    <result column="createtime" property="createtime" jdbcType="TIMESTAMP" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    id, access_Token, expiresIn, createtime
+  </sql>
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Integer" >
+    select 
+    <include refid="Base_Column_List" />
+    from mytoken
+    where id = #{id,jdbcType=INTEGER}
+  </select>
+
+  <select id="selectOne" resultMap="BaseResultMap">
+    select
+    <include refid="Base_Column_List" />
+    from mytoken
+  </select>
+
+  <update id="updateOne" parameterType="com.juxing.pojo.wechatPojo.MyToken">
+    update mytoken
+    set access_Token = #{accessToken,jdbcType=VARCHAR},
+        expiresIn = #{expiresin,jdbcType=INTEGER},
+        createtime = now()
+    where id = 1
+  </update>
+
+
+  <insert id="insert" parameterType="com.juxing.pojo.wechatPojo.MyToken" >
+    <selectKey resultType="java.lang.Integer" keyProperty="id" order="AFTER" >
+      SELECT LAST_INSERT_ID()
+    </selectKey>
+    insert into mytoken ( access_Token, expiresIn, createtime )
+    values (#{accessToken,jdbcType=VARCHAR}, #{expiresin,jdbcType=INTEGER}, now() )
+  </insert>
+
+
+  <update id="updateByPrimaryKey" parameterType="com.juxing.pojo.wechatPojo.MyToken" >
+    update mytoken
+    set access_Token = #{accessToken,jdbcType=VARCHAR},
+      expiresIn = #{expiresin,jdbcType=INTEGER},
+      createtime = #{createtime,jdbcType=TIMESTAMP}
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+</mapper>

@@ -1,18 +1,20 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
 <mapper namespace="com.juxing.mapper.CustomerMapper" >
-  <resultMap id="BaseResultMap" type="com.juxing.pojo.Customer" >
+  <resultMap id="BaseResultMap" type="com.juxing.pojo.mysqlPojo.Customer" >
     <id column="id" property="id" jdbcType="INTEGER" />
     <result column="cus_id" property="cusId" jdbcType="VARCHAR" />
     <result column="cus_name" property="cusName" jdbcType="VARCHAR" />
     <result column="cus_sex" property="cusSex" jdbcType="INTEGER" />
     <result column="cus_phone" property="cusPhone" jdbcType="VARCHAR" />
-    <result column="cus_referrer" property="cusReferrer" jdbcType="INTEGER" />
-    <result column="cometime" property="cometime" jdbcType="DATE" />
+    <result column="cus_refer" property="cusRefer" jdbcType="VARCHAR" />
+    <result column="cus_referid" property="cusReferid" jdbcType="VARCHAR" />
+    <result column="cus_refername" property="cusRefername" jdbcType="VARCHAR" />
     <result column="createtime" property="createtime" jdbcType="TIMESTAMP" />
   </resultMap>
   <sql id="Base_Column_List" >
-    id, cus_id, cus_name, cus_sex, cus_phone, cus_referrer, cometime, createtime
+    id, cus_id, cus_name, cus_sex, cus_phone, cus_refer, cus_referid, cus_refername, 
+    createtime
   </sql>
   <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Integer" >
     select 
@@ -24,24 +26,40 @@
     delete from ymt_customer
     where id = #{id,jdbcType=INTEGER}
   </delete>
-  <insert id="insert" parameterType="com.juxing.pojo.Customer" >
+  <insert id="insert" parameterType="com.juxing.pojo.mysqlPojo.Customer" >
     <selectKey resultType="java.lang.Integer" keyProperty="id" order="AFTER" >
       SELECT LAST_INSERT_ID()
     </selectKey>
-    insert into ymt_customer (cus_id, cus_name, cus_sex, cus_phone, cus_referrer, cometime, createtime)
-    values (#{cusId,jdbcType=INTEGER}, #{cusName,jdbcType=VARCHAR}, #{cusSex,jdbcType=INTEGER}, 
-      #{cusPhone,jdbcType=VARCHAR}, #{cusReferrer,jdbcType=INTEGER}, #{cometime,jdbcType=DATE}, now())
+    insert into ymt_customer (cus_id, cus_name, cus_sex, 
+      cus_phone, cus_refer, cus_referid, 
+      cus_refername, createtime)
+    values (#{cusId,jdbcType=VARCHAR}, #{cusName,jdbcType=VARCHAR}, #{cusSex,jdbcType=INTEGER}, 
+      #{cusPhone,jdbcType=VARCHAR}, #{cusRefer,jdbcType=VARCHAR}, #{cusReferid,jdbcType=VARCHAR}, 
+      #{cusRefername,jdbcType=VARCHAR}, now())
   </insert>
-
-  <update id="updateByPrimaryKey" parameterType="com.juxing.pojo.Customer" >
+  <update id="updateByPrimaryKey" parameterType="com.juxing.pojo.mysqlPojo.Customer" >
     update ymt_customer
-    set cus_id = #{cusId,jdbcType=INTEGER},
+    set cus_id = #{cusId,jdbcType=VARCHAR},
       cus_name = #{cusName,jdbcType=VARCHAR},
       cus_sex = #{cusSex,jdbcType=INTEGER},
       cus_phone = #{cusPhone,jdbcType=VARCHAR},
-      cus_referrer = #{cusReferrer,jdbcType=INTEGER},
-      cometime = #{cometime,jdbcType=DATE},
+      cus_refer = #{cusRefer,jdbcType=VARCHAR},
+      cus_referid = #{cusReferid,jdbcType=VARCHAR},
+      cus_refername = #{cusRefername,jdbcType=VARCHAR},
       createtime = #{createtime,jdbcType=TIMESTAMP}
     where id = #{id,jdbcType=INTEGER}
   </update>
+  <select id="selectByPhone" resultMap="BaseResultMap">
+    select
+    <include refid="Base_Column_List" />
+    from ymt_customer
+    where cus_phone = #{phone}
+  </select>
+  <select id="selectByOpenid" resultMap="BaseResultMap">
+    select
+    <include refid="Base_Column_List" />
+    from ymt_customer
+    where cus_refer = #{openid}
+  </select>
+  
 </mapper>

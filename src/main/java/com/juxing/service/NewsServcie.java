@@ -1,7 +1,8 @@
 package com.juxing.service;
 
-import com.juxing.common.vo.R;
-import com.juxing.pojo.News;
+import com.juxing.common.vo.Resp;
+import com.juxing.common.vo.RespObj;
+import com.juxing.pojo.mysqlPojo.News;
 
 /**
  * @Auther: Mr.Liu
@@ -10,9 +11,9 @@ import com.juxing.pojo.News;
  */
 public interface NewsServcie {
 
-    R newsSave(News news);
+    Resp newsSave(News news);
 
-    R getAllNews();
+    RespObj getAllNews(Integer page);
 
 
 }

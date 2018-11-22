@@ -1,0 +1,164 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.juxing.mapper.OrdersMapper">
+    <resultMap id="BaseResultMap" type="com.juxing.pojo.mysqlPojo.Orders">
+        <id column="id" property="id" jdbcType="INTEGER"/>
+        <result column="order_id" property="orderId" jdbcType="VARCHAR"/>
+        <result column="order_project" property="orderProject" jdbcType="VARCHAR"/>
+        <result column="order_designer" property="orderDesigner" jdbcType="VARCHAR"/>
+        <result column="order_money" property="orderMoney" jdbcType="VARCHAR"/>
+        <result column="order_refer" property="orderRefer" jdbcType="VARCHAR"/>
+        <result column="order_userid" property="orderUserid" jdbcType="VARCHAR"/>
+        <result column="order_username" property="orderUsername" jdbcType="VARCHAR"/>
+        <result column="order_fatheropenid" property="orderFatheropenid" jdbcType="VARCHAR"/>
+        <result column="order_fatherid" property="orderFatherid" jdbcType="VARCHAR"/>
+        <result column="order_fathername" property="orderFathername" jdbcType="VARCHAR"/>
+        <result column="order_shopname" property="orderShopname" jdbcType="VARCHAR"/>
+        <result column="order_dismoney" property="orderDismoney" jdbcType="VARCHAR"/>
+        <result column="order_fatherdismoney" property="orderFatherdismoney" jdbcType="VARCHAR"/>
+        <result column="order_cometime" property="orderCometime" jdbcType="TIMESTAMP"/>
+        <result column="cus_id" property="cusId" jdbcType="VARCHAR"/>
+        <result column="cus_name" property="cusName" jdbcType="VARCHAR"/>
+        <result column="cus_sex" property="cusSex" jdbcType="INTEGER"/>
+        <result column="cus_phone" property="cusPhone" jdbcType="VARCHAR"/>
+        <result column="createtime" property="createtime" jdbcType="TIMESTAMP"/>
+        <result column="order_status" property="orderStatus" jdbcType="INTEGER"/>
+        <result column="is_sync" property="isSync" jdbcType="INTEGER"/>
+    </resultMap>
+    <sql id="Base_Column_List">
+    id, order_id, order_project, order_designer, order_money, order_refer, order_userid, 
+    order_username, order_fatheropenid, order_fatherid, order_fathername, order_shopname, 
+    order_dismoney, order_fatherdismoney, order_cometime, cus_id, cus_name, cus_sex, 
+    cus_phone, createtime, order_status, is_sync
+  </sql>
+    <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Integer">
+        select
+        <include refid="Base_Column_List"/>
+        from ymt_orders
+        where id = #{id,jdbcType=INTEGER}
+    </select>
+    <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer">
+    delete from ymt_orders
+    where id = #{id,jdbcType=INTEGER}
+  </delete>
+    <insert id="insert" parameterType="com.juxing.pojo.mysqlPojo.Orders">
+        <selectKey resultType="java.lang.Integer" keyProperty="id" order="AFTER">
+            SELECT LAST_INSERT_ID()
+        </selectKey>
+        insert into ymt_orders (order_id, order_project, order_designer,
+        order_money, order_refer, order_userid,
+        order_username, order_fatheropenid, order_fatherid,
+        order_fathername, order_shopname, order_dismoney,
+        order_fatherdismoney, order_cometime, cus_id,
+        cus_name, cus_sex, cus_phone,
+        createtime, order_status, is_sync
+        )
+        values (#{orderId,jdbcType=VARCHAR}, #{orderProject,jdbcType=VARCHAR}, #{orderDesigner,jdbcType=VARCHAR},
+        0, #{orderRefer,jdbcType=VARCHAR}, #{orderUserid,jdbcType=VARCHAR},
+        #{orderUsername,jdbcType=VARCHAR}, #{orderFatheropenid,jdbcType=VARCHAR}, #{orderFatherid,jdbcType=VARCHAR},
+        #{orderFathername,jdbcType=VARCHAR}, #{orderShopname,jdbcType=VARCHAR}, 0,
+        0, #{orderCometime,jdbcType=TIMESTAMP}, #{cusId,jdbcType=VARCHAR},
+        #{cusName,jdbcType=VARCHAR}, #{cusSex,jdbcType=INTEGER}, #{cusPhone,jdbcType=VARCHAR},
+        now(), 1, 0
+        )
+    </insert>
+
+    <select id="selectByRefer" resultMap="BaseResultMap">
+        select
+        <include refid="Base_Column_List"/>
+        from ymt_orders
+        where order_refer = #{orderRefer} and order_status = #{status}
+        order by createtime desc
+        LIMIT 10 offset ${(page-1)*10};
+    </select>
+
+    <select id="selectByText" resultMap="BaseResultMap">
+        select
+        <include refid="Base_Column_List"/>
+        from
+        (select * from ymt_orders where order_refer = #{openid}) t
+        where cus_name like "%"#{text}"%" or cus_phone like "%"#{text}"%" or order_id like "%"#{text}"%"
+        order by createtime desc
+        LIMIT 10 offset ${(page-1)*10}
+    </select>
+
+    <select id="selectByOpenid" resultMap="BaseResultMap">
+        select
+        <include refid="Base_Column_List"/>
+        from ymt_orders
+        where order_refer = #{openid}
+        group by cus_name
+        order by createtime desc
+        LIMIT 10 offset ${(page-1)*10}
+    </select>
+
+    <select id="selectByCus" resultMap="BaseResultMap">
+        select
+        <include refid="Base_Column_List"/>
+        from ymt_orders
+        where cus_phone = #{cusPhone}
+        order by createtime desc
+        LIMIT 10 offset ${(page-1)*10}
+    </select>
+
+    <select id="selectAllOrders" resultMap="BaseResultMap">
+        select
+        <include refid="Base_Column_List"/>
+        from ymt_orders
+        where order_refer = #{openid}
+        order by createtime desc
+    </select>
+
+    <select id="selectAllOrders2" resultMap="BaseResultMap">
+        select
+        <include refid="Base_Column_List"/>
+        from ymt_orders
+        where order_refer = #{openid} and order_status = #{status}
+    </select>
+    <select id="selectAllOrdersByFatopenid" resultMap="BaseResultMap">
+        select
+        <include refid="Base_Column_List"/>
+        from ymt_orders
+        where order_fatheropenid = #{openid}
+    </select>
+
+    <select id="selectByOid" resultMap="BaseResultMap">
+        select
+        <include refid="Base_Column_List"/>
+        from ymt_orders
+        where order_refer = #{openid} and order_id = #{oid}
+    </select>
+
+    <select id="selectOne" resultMap="BaseResultMap">
+        select
+        <include refid="Base_Column_List"/>
+        from ymt_orders
+        where order_id = #{oid}
+    </select>
+
+    <update id="updateByPrimaryKey" parameterType="com.juxing.pojo.mysqlPojo.Orders">
+    update ymt_orders
+    set order_id = #{orderId,jdbcType=VARCHAR},
+      order_project = #{orderProject,jdbcType=VARCHAR},
+      order_designer = #{orderDesigner,jdbcType=VARCHAR},
+      order_money = #{orderMoney,jdbcType=VARCHAR},
+      order_refer = #{orderRefer,jdbcType=VARCHAR},
+      order_userid = #{orderUserid,jdbcType=VARCHAR},
+      order_username = #{orderUsername,jdbcType=VARCHAR},
+      order_fatheropenid = #{orderFatheropenid,jdbcType=VARCHAR},
+      order_fatherid = #{orderFatherid,jdbcType=VARCHAR},
+      order_fathername = #{orderFathername,jdbcType=VARCHAR},
+      order_shopname = #{orderShopname,jdbcType=VARCHAR},
+      order_dismoney = #{orderDismoney,jdbcType=VARCHAR},
+      order_fatherdismoney = #{orderFatherdismoney,jdbcType=VARCHAR},
+      order_cometime = #{orderCometime,jdbcType=TIMESTAMP},
+      cus_id = #{cusId,jdbcType=VARCHAR},
+      cus_name = #{cusName,jdbcType=VARCHAR},
+      cus_sex = #{cusSex,jdbcType=INTEGER},
+      cus_phone = #{cusPhone,jdbcType=VARCHAR},
+      createtime = #{createtime,jdbcType=TIMESTAMP},
+      order_status = #{orderStatus,jdbcType=INTEGER},
+      is_sync = #{isSync,jdbcType=INTEGER}
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+</mapper>

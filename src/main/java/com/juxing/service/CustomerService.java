@@ -1,7 +1,7 @@
 package com.juxing.service;
 
-import com.juxing.common.vo.R;
-import com.juxing.pojo.Customer;
+import com.juxing.common.vo.Resp;
+import com.juxing.pojo.mysqlPojo.Customer;
 
 /**
  * @Auther: Mr.Liu
@@ -10,6 +10,6 @@ import com.juxing.pojo.Customer;
  */
 public interface CustomerService {
 
-    R customerSave(Customer customer);
+    Resp customerSave(Customer customer);
 
 }
