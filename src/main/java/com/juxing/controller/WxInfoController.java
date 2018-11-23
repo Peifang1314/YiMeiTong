@@ -97,9 +97,7 @@ public class WxInfoController {
     @ResponseBody
     public String jsApi() {
         //1、获取access_token
-        RespObj ret = myTokenService.getMyToken();
-        MyToken token = (MyToken) ret.getObj();
-        String accessToken = token.getAccessToken();
+        String accessToken = myTokenService.getAccessToken();
         //2、获取jsApiTicket
         Map ticketMap = CommonUtil.JsapiTicket(accessToken);
         String ticket = ticketMap.get("ticket").toString();

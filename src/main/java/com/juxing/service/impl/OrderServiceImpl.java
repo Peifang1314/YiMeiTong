@@ -1,5 +1,6 @@
 package com.juxing.service.impl;
 
+import com.juxing.common.util.DateUtil;
 import com.juxing.common.util.IdUtil;
 import com.juxing.common.vo.Resp;
 import com.juxing.common.vo.RespObj;
@@ -64,7 +65,7 @@ public class OrderServiceImpl implements OrderService {
                 orders.setCusId(strId);
                 // 2 保存用户后，保存父级和渠道关系
                 Relations relations = relationsMapper.selectRelation(orders.getOrderRefer());
-                // 2.1 存储用户的父级信息（openID ID name）
+                // 2.1 订单内存储用户的父级信息（openID ID name）
                 if (relations.getFatherId()!=null){
                     // 父级存在，存储
                     User father = userMapper.selectByOpenid(relations.getFatherId());
@@ -72,7 +73,7 @@ public class OrderServiceImpl implements OrderService {
                     orders.setOrderFatherId(father.getUserId());
                     orders.setOrderFatherName(father.getUserName());
                 }
-                // 2.2 存储用户的渠道信息（openID ID name）
+                // 2.2 订单内存储用户的渠道信息（openID ID name）
                 if (relations.getServiceId()!=null){
                     // 渠道存在，存储
                     User service = userMapper.selectByOpenid(relations.getServiceId());
@@ -95,7 +96,7 @@ public class OrderServiceImpl implements OrderService {
             orders.setCusId(cus.getCusId());
             // 2 保存用户后，保存父级和渠道关系
             Relations relations = relationsMapper.selectRelation(orders.getOrderRefer());
-            // 2.1 存储用户的父级信息（openID ID name）
+            // 2.1 订单内存储用户的父级信息（openID ID name）
             if (relations.getFatherId()!=null){
                 // 父级存在，存储
                 User father = userMapper.selectByOpenid(relations.getFatherId());
@@ -103,7 +104,7 @@ public class OrderServiceImpl implements OrderService {
                 orders.setOrderFatherId(father.getUserId());
                 orders.setOrderFatherName(father.getUserName());
             }
-            // 2.2 存储用户的渠道信息（openID ID name）
+            // 2.2 订单内存储用户的渠道信息（openID ID name）
             if (relations.getServiceId()!=null){
                 // 渠道存在，存储
                 User service = userMapper.selectByOpenid(relations.getServiceId());
@@ -111,11 +112,20 @@ public class OrderServiceImpl implements OrderService {
                 orders.setOrderServiceId(service.getUserId());
                 orders.setOrderServiceName(service.getUserName());
             }
-            //生成订单
-            if (ordersMapper.insert(orders) > 0) {
-                return new Resp(200, "用户存在，订单生成", 1);
-            } else {
-                return new Resp(200, "用户存在，订单未生成", 0);
+            // 同一用户当天只能提交一次订单
+            Orders theNewOrder = ordersMapper.selectNew(orders.getCusPhone());
+            String nowTime = DateUtil.getDate();
+            String orderTime = DateUtil.formatDate2(theNewOrder.getCreatetime());
+            int t = Integer.valueOf(nowTime)-Integer.valueOf(orderTime);
+            if (t>=1){
+                //生成订单
+                if (ordersMapper.insert(orders) > 0) {
+                    return new Resp(200, "用户存在，订单生成", 1);
+                } else {
+                    return new Resp(200, "用户存在，订单未生成", 0);
+                }
+            }else {
+                return new Resp(800,"同一用户当天只能生成一个订单",0);
             }
         }
     }

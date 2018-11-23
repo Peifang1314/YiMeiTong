@@ -10,6 +10,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Objects;
 
 /**
  * @Auther: Mr.Liu
@@ -41,6 +42,16 @@ public class NewsServiceImpl implements NewsServcie {
             return new RespObj(800,"error",0,null);
         }else {
             return new RespObj(200,"success",1,datas);
+        }
+    }
+
+    @Override
+    public RespObj getOneNews(Integer id) {
+        News news = newsMapper.selectByPrimaryKey(id);
+        if (Objects.equals(null,news)){
+            return RespObj.error();
+        }else {
+            return new RespObj(200,"新闻",1,news);
         }
     }
 }

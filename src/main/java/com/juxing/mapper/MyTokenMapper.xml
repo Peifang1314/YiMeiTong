@@ -10,6 +10,7 @@
   <sql id="Base_Column_List" >
     id, access_Token, expiresIn, createtime
   </sql>
+
   <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Integer" >
     select 
     <include refid="Base_Column_List" />
@@ -26,11 +27,9 @@
   <update id="updateOne" parameterType="com.juxing.pojo.wechatPojo.MyToken">
     update mytoken
     set access_Token = #{accessToken,jdbcType=VARCHAR},
-        expiresIn = #{expiresin,jdbcType=INTEGER},
         createtime = now()
     where id = 1
   </update>
-
 
   <insert id="insert" parameterType="com.juxing.pojo.wechatPojo.MyToken" >
     <selectKey resultType="java.lang.Integer" keyProperty="id" order="AFTER" >
@@ -39,7 +38,6 @@
     insert into mytoken ( access_Token, expiresIn, createtime )
     values (#{accessToken,jdbcType=VARCHAR}, #{expiresin,jdbcType=INTEGER}, now() )
   </insert>
-
 
   <update id="updateByPrimaryKey" parameterType="com.juxing.pojo.wechatPojo.MyToken" >
     update mytoken

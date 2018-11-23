@@ -12,4 +12,10 @@ public interface MyTokenService {
 
     RespObj getMyToken();
 
+    /**
+     * 定时任务获取access_token(10分钟1次)
+     * @return 最新的access_Token
+     */
+    String getAccessToken();
+
 }

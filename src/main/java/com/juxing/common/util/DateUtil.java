@@ -22,6 +22,14 @@ public class DateUtil {
     }
 
     /**
+     * 获取当天日期
+     * @return
+     */
+    public static String getDate(){
+        return new SimpleDateFormat("yyyyMMdd").format(new Date());
+    }
+
+    /**
      * 以友好的方式显示时间
      *
      * @param time
@@ -77,6 +85,15 @@ public class DateUtil {
      */
     public static String formatDate(Date date) {
         return new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(date);
+    }
+
+    /**
+     * 格式化字符串，解决从MySql中查出来的数据后面多了0的问题
+     * @param date
+     * @return 数据的日期
+     */
+    public static String formatDate2(Date date){
+        return new SimpleDateFormat("yyyyMMdd").format(date);
     }
 }
 

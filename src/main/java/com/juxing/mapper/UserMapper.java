@@ -27,6 +27,13 @@ public interface UserMapper {
     //更改用户的信息
     int updateUser(User user);
 
+    /**
+     * 更新用户的带参数二维码地址
+     * @param user
+     * @return
+     */
+    int updateUserShorturl(User user);
+
 
     User selectByPrimaryKey(Integer id);
     int updateByPrimaryKey(User record);

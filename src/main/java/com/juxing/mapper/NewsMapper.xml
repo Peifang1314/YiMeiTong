@@ -6,11 +6,12 @@
         <result column="news_id" property="newsId" jdbcType="VARCHAR"/>
         <result column="news_title" property="newsTitle" jdbcType="VARCHAR"/>
         <result column="news_content" property="newsContent" jdbcType="VARCHAR"/>
+        <result column="news_content_html" property="newsContentHtml" jdbcType="VARCHAR"/>
         <result column="news_createtime" property="newsCreatetime" jdbcType="TIMESTAMP"/>
     </resultMap>
     <sql id="Base_Column_List">
-    id, news_id, news_title, news_content, news_createtime
-  </sql>
+    id, news_id, news_title, news_content, news_content_html, news_createtime
+    </sql>
     <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Integer">
         select
         <include refid="Base_Column_List"/>
@@ -45,18 +46,18 @@
             SELECT LAST_INSERT_ID()
         </selectKey>
         insert into ymt_news (news_id, news_title, news_content,
-        news_createtime)
+        news_content_html, news_createtime)
         values (#{newsId,jdbcType=VARCHAR}, #{newsTitle,jdbcType=VARCHAR}, #{newsContent,jdbcType=VARCHAR},
-        #{newsCreatetime,jdbcType=TIMESTAMP})
+        #{newsContentHtml,jdbcType=VARCHAR}, now())
     </insert>
-
 
     <update id="updateByPrimaryKey" parameterType="com.juxing.pojo.mysqlPojo.News">
     update ymt_news
     set news_id = #{newsId,jdbcType=VARCHAR},
       news_title = #{newsTitle,jdbcType=VARCHAR},
       news_content = #{newsContent,jdbcType=VARCHAR},
+      news_content_html = #{newsContentHtml,jdbcType=VARCHAR},
       news_createtime = #{newsCreatetime,jdbcType=TIMESTAMP}
     where id = #{id,jdbcType=INTEGER}
-  </update>
+    </update>
 </mapper>

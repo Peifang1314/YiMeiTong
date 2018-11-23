@@ -1,8 +1,6 @@
 package com.juxing.controller;
 
-import com.alibaba.fastjson.JSONObject;
 import com.juxing.common.util.AdvancedUtil;
-import com.juxing.common.util.CommonUtil;
 import com.juxing.common.vo.RespObj;
 import com.juxing.pojo.mysqlPojo.User;
 import com.juxing.pojo.reqPojo.SearchRequest;
@@ -46,9 +44,6 @@ public class WxUserController {
 
         // 用户同意授权后，能获取到code
         String code = request.getParameter("code");
-
-        String state = request.getParameter("state");
-        System.out.println("state:" + state);
 
         // 用户同意授权
         // 获取网页授权access_token
@@ -110,8 +105,8 @@ public class WxUserController {
     @RequestMapping("/getForeverQRcode")
     public RespObj getForeverQRcode(@RequestBody SearchRequest request) {
         String openId = request.getText();
-        MyToken token = (MyToken) myTokenService.getMyToken().getObj();
-        String shortUrl = wechatQRcodeService.createForeverQRcode(token.getAccessToken(), openId);
+        String accessToken = myTokenService.getAccessToken();
+        String shortUrl = wechatQRcodeService.createForeverQRcode(accessToken, openId);
         if (Objects.equals(null, shortUrl)) {
             return RespObj.error();
         } else {
@@ -129,30 +124,12 @@ public class WxUserController {
      */
     @RequestMapping("/getTempQRcode")
     public RespObj getWechatPic(@RequestBody SearchRequest request) {
-        //参数为用户的OpenID，形成上下级关系
+        // 参数为用户的OpenID，形成上下级关系
         String datas = request.getText();
-        //获取数据库内存储的accessToken值,防止token重复刷新达到使用上限（2000）
-        MyToken myToken = (MyToken) myTokenService.getMyToken().getObj();
-
-
-        //请求参数str（临时）
-        JsonWechatPicReq wechatPicReq = new JsonWechatPicReq();
-        //临时二维码的有效时间（30天）
-        wechatPicReq.setExpire_seconds(2592000L);
-        wechatPicReq.setAction_name("QR_STR_SCENE");
-        wechatPicReq.setAction_info(new Action_info(new Scene(datas)));
-
-        String post = JSONObject.toJSONString(wechatPicReq);
-
-        Ticket ticket = AdvancedUtil.getTicket(myToken.getAccessToken(), post);
-        String requestUrl = "https://mp.weixin.qq.com/cgi-bin/showqrcode?ticket=TICKET";
-        //临时二维码的图片地址，长链接
-        requestUrl = requestUrl.replace("TICKET", ticket.getTicket());
-        // 长链接转短链接
-
-        JSONObject jsonObject = CommonUtil.long2short(myToken.getAccessToken(), requestUrl);
-        // 短链接地址
-        String shortUrl = jsonObject.getString("short_url");
+        // 获取数据库内存储的accessToken值,防止token重复刷新达到使用上限（2000）
+        String accessToken = myTokenService.getAccessToken();
+        // 临时二维码短链接地址
+        String shortUrl = wechatQRcodeService.createTempQRcode(accessToken,datas);
 
         return new RespObj(200, "success", 1, shortUrl);
     }

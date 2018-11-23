@@ -2,12 +2,6 @@ package com.juxing.pojo.mysqlPojo;
 
 import java.util.Date;
 
-/**
- * @Auther: Mr.Liu
- * @Date: 2018/10/29 09
- * @Description: 新闻中心的实体类
- */
-
 public class News {
     private Integer id;
 
@@ -15,9 +9,11 @@ public class News {
 
     private String newsTitle;
 
-    private String newsCreatetime;
-
     private String newsContent;
+
+    private String newsContentHtml;
+
+    private Date newsCreatetime;
 
     public Integer getId() {
         return id;
@@ -32,7 +28,7 @@ public class News {
     }
 
     public void setNewsId(String newsId) {
-        this.newsId = newsId;
+        this.newsId = newsId == null ? null : newsId.trim();
     }
 
     public String getNewsTitle() {
@@ -43,14 +39,6 @@ public class News {
         this.newsTitle = newsTitle == null ? null : newsTitle.trim();
     }
 
-    public String getNewsCreatetime() {
-        return newsCreatetime;
-    }
-
-    public void setNewsCreatetime(String newsCreatetime) {
-        this.newsCreatetime = newsCreatetime;
-    }
-
     public String getNewsContent() {
         return newsContent;
     }
@@ -59,14 +47,19 @@ public class News {
         this.newsContent = newsContent == null ? null : newsContent.trim();
     }
 
-    @Override
-    public String toString() {
-        return "News{" +
-                "id=" + id +
-                ", newsId='" + newsId + '\'' +
-                ", newsTitle='" + newsTitle + '\'' +
-                ", newsCreatetime='" + newsCreatetime + '\'' +
-                ", newsContent='" + newsContent + '\'' +
-                '}';
+    public String getNewsContentHtml() {
+        return newsContentHtml;
+    }
+
+    public void setNewsContentHtml(String newsContentHtml) {
+        this.newsContentHtml = newsContentHtml == null ? null : newsContentHtml.trim();
+    }
+
+    public Date getNewsCreatetime() {
+        return newsCreatetime;
+    }
+
+    public void setNewsCreatetime(Date newsCreatetime) {
+        this.newsCreatetime = newsCreatetime;
     }
 }

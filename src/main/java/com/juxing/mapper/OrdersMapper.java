@@ -69,9 +69,6 @@ public interface OrdersMapper {
      */
     List<Orders> selectAllOrdersByFatopenid(String openid);
 
-
-
-
     /**
      * 查找单个订单
      * @param oid 订单id
@@ -79,6 +76,12 @@ public interface OrdersMapper {
      */
     Orders selectOne(String oid);
 
+    /**
+     * 查找用户的最新订单
+     * @param cusPhone 用户电话号码
+     * @return
+     */
+    Orders selectNew(String cusPhone);
 
 
 

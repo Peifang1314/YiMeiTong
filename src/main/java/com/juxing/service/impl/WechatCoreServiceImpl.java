@@ -1,17 +1,26 @@
 package com.juxing.service.impl;
 
+import com.alibaba.fastjson.JSONObject;
+import com.juxing.common.util.AdvancedUtil;
+import com.juxing.common.util.CommonUtil;
+import com.juxing.common.util.DateUtil;
 import com.juxing.common.util.WechatMessageUtil;
+import com.juxing.mapper.MyTokenMapper;
 import com.juxing.mapper.RelationsMapper;
+import com.juxing.mapper.UserMapper;
 import com.juxing.pojo.mysqlPojo.Relations;
+import com.juxing.pojo.mysqlPojo.User;
+import com.juxing.pojo.wechatPojo.App;
+import com.juxing.pojo.wechatPojo.MyToken;
+import com.juxing.pojo.wechatPojo.Ticket;
+import com.juxing.pojo.wechatPojo.Token;
 import com.juxing.service.WechatCoreService;
 import com.juxing.wechat.message.resp.TextMessage;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import javax.servlet.http.HttpServletRequest;
-import java.util.Date;
-import java.util.Map;
-import java.util.Objects;
+import java.util.*;
 
 /**
  * @Auther: Mr.Liu
@@ -24,6 +33,12 @@ public class WechatCoreServiceImpl implements WechatCoreService {
     @Autowired
     private RelationsMapper relationsMapper;
 
+    @Autowired
+    private UserMapper userMapper;
+
+    @Autowired
+    private MyTokenMapper myTokenMapper;
+
 
     @Override
     public String processRequest(HttpServletRequest request) {
@@ -31,7 +46,7 @@ public class WechatCoreServiceImpl implements WechatCoreService {
         String respXml = null;
 
         //默认返回的文本消息内容
-        String respContent = "未知的消息类型!";
+        String respContent = "巨星集团欢迎你!";
 
         Map<String, String> map = WechatMessageUtil.xmlToMap(request);
         //开发者微信号
@@ -194,7 +209,47 @@ public class WechatCoreServiceImpl implements WechatCoreService {
                 //点击菜单事件
                 if (Objects.equals(eventKey, "V1002_MyQRCode")) {
                     //带个人openID的二维码
+//                    fromUserName
+                    User user = userMapper.selectByOpenid(fromUserName);
+                    if (Objects.equals(null, user)) {
+                        // 1 用户未注册医美通
+                        respContent = "请先注册医美通：http://m.superstar.vc";
+                    } else {
+                        //2 已注册，但是个人信息没有推广二维码
+                        if (Objects.equals(null, user.getUserShorturl())) {
+                            // 2.1 没有带参数二维码短链接，生成一个新的
+                            MyToken myToken = myTokenMapper.selectOne();
+                            String accessToken = myToken.getAccessToken();
 
+                            TreeMap<String, String> params = new TreeMap<>();
+                            params.put("access_token", accessToken);
+                            // output data
+                            Map<String, String> intMap = new HashMap<>();
+                            intMap.put("scene_str", fromUserName);
+                            Map<String, Map<String, String>> mapMap = new HashMap<>();
+                            mapMap.put("scene", intMap);
+                            Map<String, Object> paramsMap = new HashMap<>();
+                            paramsMap.put("action_name", "QR_LIMIT_STR_SCENE");
+                            paramsMap.put("action_info", mapMap);
+                            String data = JSONObject.toJSONString(paramsMap);
+
+                            Ticket ticket = AdvancedUtil.getTicket(accessToken, data);
+                            String requestUrl = "https://mp.weixin.qq.com/cgi-bin/showqrcode?ticket=TICKET";
+                            //二维码的图片地址，长链接
+                            requestUrl = requestUrl.replace("TICKET", ticket.getTicket());
+                            // 长链接转短链接
+                            JSONObject jsonObject = CommonUtil.long2short(accessToken, requestUrl);
+                            // 短链接地址
+                            String shortUrl = jsonObject.getString("short_url");
+                            user.setUserShorturl(shortUrl);
+                            userMapper.updateUserShorturl(user);
+                            respContent = "个人推广二维码：" + shortUrl;
+                        } else {
+                            //2.2 有短链接
+                            String shortUrl = user.getUserShorturl();
+                            respContent = "个人推广二维码：" + shortUrl;
+                        }
+                    }
                 }
 
             }

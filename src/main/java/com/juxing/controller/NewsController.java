@@ -3,6 +3,7 @@ package com.juxing.controller;
 import com.juxing.common.vo.Resp;
 import com.juxing.common.vo.RespObj;
 import com.juxing.pojo.mysqlPojo.News;
+import com.juxing.pojo.reqPojo.SearchRequest;
 import com.juxing.service.NewsServcie;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
@@ -23,20 +24,28 @@ public class NewsController {
     @Autowired
     private NewsServcie newsServcie;
 
-    @PostMapping("/api/newsSave")
-    private Resp newsSave(News news){
+    @PostMapping("/newsSave")
+    public Resp newsSave(News news) {
         return newsServcie.newsSave(news);
     }
 
     /**
      * 获得新闻列表
+     *
      * @return
      */
     @GetMapping("/getAllNews")
-    private RespObj getAllNews(HttpServletRequest request){
+    public RespObj getAllNews(HttpServletRequest request) {
         Integer page = Integer.valueOf(request.getParameter("page"));
-        System.out.println("page:"+page);
+        System.out.println("page:" + page);
         return newsServcie.getAllNews(page);
     }
+
+    @RequestMapping("/getOneNews")
+    public RespObj getOneNews(@RequestBody SearchRequest request) {
+        int id = Integer.valueOf(request.getText());
+        return newsServcie.getOneNews(id);
+    }
+
 
 }
