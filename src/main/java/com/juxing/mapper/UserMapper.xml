@@ -12,16 +12,20 @@
         <result column="user_phone" property="userPhone" jdbcType="VARCHAR"/>
         <result column="user_address" property="userAddress" jdbcType="VARCHAR"/>
         <result column="user_status" property="userStatus" jdbcType="INTEGER"/>
+        <result column="user_notAllow" property="userNotallow" jdbcType="VARCHAR"/>
         <result column="user_role" property="userRole" jdbcType="INTEGER"/>
         <result column="user_shortUrl" property="userShorturl" jdbcType="VARCHAR"/>
+        <result column="service_openid" property="serviceOpenid" jdbcType="VARCHAR"/>
+        <result column="service_id" property="serviceId" jdbcType="VARCHAR"/>
+        <result column="service_name" property="serviceName" jdbcType="VARCHAR"/>
         <result column="service_phone" property="servicePhone" jdbcType="VARCHAR"/>
         <result column="createtime" property="createtime" jdbcType="TIMESTAMP"/>
         <result column="is_sync" property="isSync" jdbcType="INTEGER"/>
     </resultMap>
     <sql id="Base_Column_List">
     id, user_id, user_openid, user_nickname, user_headimgurl, user_name, user_shopname, 
-    user_phone, user_address, user_status, user_role, user_shortUrl, service_phone, createtime, 
-    is_sync
+    user_phone, user_address, user_status, user_notAllow, user_role, user_shortUrl, service_openid, 
+    service_id, service_name, service_phone, createtime, is_sync
     </sql>
     <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Integer">
         select
@@ -29,7 +33,6 @@
         from ymt_user
         where id = #{id,jdbcType=INTEGER}
     </select>
-
     <insert id="insert" parameterType="com.juxing.pojo.mysqlPojo.User">
         <selectKey resultType="java.lang.Integer" keyProperty="id" order="AFTER">
             SELECT LAST_INSERT_ID()
@@ -37,13 +40,17 @@
         insert into ymt_user (user_id, user_openid, user_nickname,
         user_headimgurl, user_name, user_shopname,
         user_phone, user_address, user_status,
-        user_role, user_shortUrl, service_phone,
-        createtime, is_sync)
+        user_notAllow, user_role, user_shortUrl,
+        service_openid, service_id, service_name,
+        service_phone, createtime, is_sync
+        )
         values (#{userId,jdbcType=VARCHAR}, #{userOpenid,jdbcType=VARCHAR}, #{userNickname,jdbcType=VARCHAR},
         #{userHeadimgurl,jdbcType=VARCHAR}, #{userName,jdbcType=VARCHAR}, #{userShopname,jdbcType=VARCHAR},
         #{userPhone,jdbcType=VARCHAR}, #{userAddress,jdbcType=VARCHAR}, 1,
-        #{userRole,jdbcType=INTEGER}, #{userShorturl,jdbcType=VARCHAR}, #{servicePhone,jdbcType=VARCHAR},
-        now(), 0)
+        #{userNotallow,jdbcType=VARCHAR}, #{userRole,jdbcType=INTEGER}, #{userShorturl,jdbcType=VARCHAR},
+        #{serviceOpenid,jdbcType=VARCHAR}, #{serviceId,jdbcType=VARCHAR}, #{serviceName,jdbcType=VARCHAR},
+        #{servicePhone,jdbcType=VARCHAR}, now(), 0
+        )
     </insert>
 
     <select id="selectByText" resultMap="BaseResultMap">
@@ -71,7 +78,41 @@
         select
         <include refid="Base_Column_List"/>
         from ymt_user
-        where user_status=1;
+        where user_openid = #{openId} and user_status=1 ;
+    </select>
+
+    <select id="selectUnableUserByServ" resultMap="BaseResultMap">
+        select
+        <include refid="Base_Column_List"/>
+        from ymt_user
+        where user_status = 1
+        and user_openid in
+        <foreach item="item" index="index" collection="list"
+                 open="(" separator="," close=")">
+            #{item}
+        </foreach>
+    </select>
+
+    <select id="selectUsersByStatus" resultMap="BaseResultMap">
+        select
+        <include refid="Base_Column_List"/>
+        from ymt_user
+        where user_status = #{status}
+        and service_openid = #{openId}
+        LIMIT 10 offset ${(page-1)*10};
+    </select>
+
+    <select id="selectUsersByName" resultMap="BaseResultMap">
+        select
+        <include refid="Base_Column_List"/>
+        from ymt_user
+        where user_status = 2
+        and user_openid in
+        <foreach item="item" index="index" collection="openList"
+                 open="(" separator="," close=")">
+            #{item}
+        </foreach>
+        and user_shopname like "%"#{shopName}"%"
     </select>
 
     <update id="updateUser" parameterType="com.juxing.pojo.mysqlPojo.User">
@@ -81,7 +122,7 @@
         where user_openid = #{userOpenid}
     </update>
 
-    <update id="updataUserstatus" parameterType="com.juxing.pojo.mysqlPojo.User">
+    <update id="updateUserStatus" parameterType="com.juxing.pojo.mysqlPojo.User">
      update ymt_user
      set user_status = 2
      where id = #{id,jdbcType=INTEGER}
@@ -93,6 +134,12 @@
         where id = #{id}
     </update>
 
+    <update id="updateUserNotAllow">
+         update ymt_user
+         set user_notAllow = #{notAllow},
+         user_status = 4
+         where user_openid = #{openId}
+    </update>
     <update id="updateByPrimaryKey" parameterType="com.juxing.pojo.mysqlPojo.User">
     update ymt_user
     set user_id = #{userId,jdbcType=VARCHAR},
@@ -104,8 +151,12 @@
       user_phone = #{userPhone,jdbcType=VARCHAR},
       user_address = #{userAddress,jdbcType=VARCHAR},
       user_status = #{userStatus,jdbcType=INTEGER},
+      user_notAllow = #{userNotallow,jdbcType=VARCHAR},
       user_role = #{userRole,jdbcType=INTEGER},
       user_shortUrl = #{userShorturl,jdbcType=VARCHAR},
+      service_openid = #{serviceOpenid,jdbcType=VARCHAR},
+      service_id = #{serviceId,jdbcType=VARCHAR},
+      service_name = #{serviceName,jdbcType=VARCHAR},
       service_phone = #{servicePhone,jdbcType=VARCHAR},
       createtime = #{createtime,jdbcType=TIMESTAMP},
       is_sync = #{isSync,jdbcType=INTEGER}

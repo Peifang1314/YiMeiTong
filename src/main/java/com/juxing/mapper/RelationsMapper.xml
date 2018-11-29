@@ -11,7 +11,8 @@
     </resultMap>
     <sql id="Base_Column_List">
     id, user_id, father_id, service_id, createtime, modifytime
-  </sql>
+    </sql>
+
     <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Integer">
         select
         <include refid="Base_Column_List"/>
@@ -33,6 +34,13 @@
         where father_id = #{openid}
     </select>
 
+    <select id="selectUserList" resultMap="BaseResultMap">
+        select
+        <include refid="Base_Column_List"/>
+        from ymt_relations
+        where service_id = #{openId}
+    </select>
+
     <select id="selectRelation" resultMap="BaseResultMap">
         select
         <include refid="Base_Column_List"/>
@@ -41,9 +49,10 @@
     </select>
 
     <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer">
-    delete from ymt_relations
-    where id = #{id,jdbcType=INTEGER}
-  </delete>
+        delete from ymt_relations
+        where id = #{id,jdbcType=INTEGER}
+    </delete>
+
     <insert id="insert" parameterType="com.juxing.pojo.mysqlPojo.Relations">
         <selectKey resultType="java.lang.Integer" keyProperty="id" order="AFTER">
             SELECT LAST_INSERT_ID()
@@ -53,25 +62,36 @@
         values (#{userId,jdbcType=VARCHAR}, #{fatherId,jdbcType=VARCHAR}, #{serviceId,jdbcType=VARCHAR},
         now(), now())
     </insert>
+
     <update id="updateFatherRelation" parameterType="com.juxing.pojo.mysqlPojo.Relations">
-    update ymt_relations
-    set father_id = #{fatherId,jdbcType=VARCHAR},
-    modifytime = now()
-    where user_id = #{userId,jdbcType=VARCHAR}
-  </update>
-    <update id="updateServiceRelation" parameterType="com.juxing.pojo.mysqlPojo.Relations">
-    update ymt_relations
-    set service_id = #{serviceId,jdbcType=VARCHAR},
-    modifytime = now()
-    where user_id = #{userId,jdbcType=VARCHAR}
+        update ymt_relations
+        set father_id = #{fatherId,jdbcType=VARCHAR},
+        modifytime = now()
+        where user_id = #{userId,jdbcType=VARCHAR}
     </update>
+
+    <update id="updateServiceRelation" parameterType="com.juxing.pojo.mysqlPojo.Relations">
+        update ymt_relations
+        set service_id = #{serviceId,jdbcType=VARCHAR},
+        modifytime = now()
+        where user_id = #{userId,jdbcType=VARCHAR}
+    </update>
+
+    <update id="updateAllRelation" parameterType="com.juxing.pojo.mysqlPojo.Relations">
+        update ymt_relations
+        set father_id = #{fatherId,jdbcType=VARCHAR},
+          service_id = #{serviceId,jdbcType=VARCHAR},
+          modifytime = #{modifytime,jdbcType=TIMESTAMP}
+        where user_id = #{userId,jdbcType=VARCHAR}
+    </update>
+
     <update id="updateByPrimaryKey" parameterType="com.juxing.pojo.mysqlPojo.Relations">
-    update ymt_relations
-    set user_id = #{userId,jdbcType=VARCHAR},
-      father_id = #{fatherId,jdbcType=VARCHAR},
-      service_id = #{serviceId,jdbcType=VARCHAR},
-      createtime = #{createtime,jdbcType=TIMESTAMP},
-      modifytime = #{modifytime,jdbcType=TIMESTAMP}
-    where id = #{id,jdbcType=INTEGER}
-  </update>
+        update ymt_relations
+        set user_id = #{userId,jdbcType=VARCHAR},
+          father_id = #{fatherId,jdbcType=VARCHAR},
+          service_id = #{serviceId,jdbcType=VARCHAR},
+          createtime = #{createtime,jdbcType=TIMESTAMP},
+          modifytime = #{modifytime,jdbcType=TIMESTAMP}
+        where id = #{id,jdbcType=INTEGER}
+    </update>
 </mapper>

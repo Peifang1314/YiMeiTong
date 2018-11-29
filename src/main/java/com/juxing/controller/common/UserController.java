@@ -1,15 +1,16 @@
-package com.juxing.controller;
+package com.juxing.controller.common;
 
 import com.juxing.common.util.RsaUtil;
 import com.juxing.common.vo.RespObj;
 import com.juxing.common.vo.Resp;
 import com.juxing.pojo.*;
-import com.juxing.pojo.mysqlPojo.PhoneCode;
 import com.juxing.pojo.mysqlPojo.User;
-import com.juxing.pojo.reqPojo.SearchRequest;
+import com.juxing.pojo.reqPojo.RequestOne;
+import com.juxing.pojo.reqPojo.RequestList;
 import com.juxing.pojo.reqPojo.UpdateRequest;
 import com.juxing.service.GetCodeService;
 import com.juxing.service.UserService;
+import com.sun.org.apache.regexp.internal.RE;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -47,11 +48,12 @@ public class UserController {
 
     /**
      * 手机验证码发送
+     *
      * @param request 请求实体类
      * @return
      */
     @RequestMapping("/getPhoneCode")
-    public RespObj phoneCode(@RequestBody SearchRequest request) {
+    public RespObj phoneCode(@RequestBody RequestOne request) {
         return getCodeService.getAuthCode(request.getText());
     }
 
@@ -62,30 +64,61 @@ public class UserController {
      * @return
      */
     @RequestMapping("/getUsers")
-    public RespObj getUsers(@RequestBody SearchRequest searchRequest) {
+    public RespObj getUsers(@RequestBody RequestOne searchRequest) {
 
         return userService.getUsers(searchRequest);
     }
 
+
     /**
-     * 查询所有未授权用户
+     * 模糊查询渠道下的店家
      *
-     * @return
+     * @param request 渠道的openId，店名
+     * @return 模糊查询渠道的店家
      */
-    @RequestMapping("/getUnableUsers")
-    public RespObj getUnableUsers() {
-        return userService.getUnableUsers();
+    @RequestMapping("/getMyShops")
+    public RespObj getMyShops(@RequestBody RequestList request) {
+        String openId = request.getText();
+        String shopName = request.getText1();
+        return userService.getMyUsersByName(openId, shopName);
     }
 
+    /**
+     * 选择店家来源，未受理的店家
+     *
+     * @param request 渠道的openId，店家的状态，第X页
+     * @return 不同状态下的用户（店家）
+     */
+    @RequestMapping("getMyShopsByStatus")
+    public RespObj getMyReShops(@RequestBody RequestList request) {
+        String openId = request.getText();
+        int status = request.getNum();
+        int page = request.getPage();
+        return userService.getMyUserByStatus(openId, status, page);
+    }
 
     /**
-     * 更改用户状态，审核--已通过
+     * 不通过新增店家，填写备注
      *
+     * @param request 店家的openId，不通过的原因
      * @return
      */
-    @RequestMapping("/updateUserStatus")
-    public Resp updateUserStaus(@RequestBody UpdateRequest updateRequest) {
-        return userService.updateUserStatus(updateRequest.getOpenid());
+    @RequestMapping("setShopNotAllow")
+    public Resp setUserNotAllow(@RequestBody RequestList request) {
+        String openId = request.getText();
+        String notAllow = request.getText1();
+        return userService.setUserNotAllow(openId, notAllow);
+    }
+
+    /**
+     * 通过店家的审核，设置状态为2
+     * @param request 被审核店家的openId
+     * @return
+     */
+    @RequestMapping("/setShopAllow")
+    public Resp updateUserStatus(@RequestBody RequestOne request) {
+        String openId = request.getText();
+        return userService.setUserAllow(openId);
     }
 
 

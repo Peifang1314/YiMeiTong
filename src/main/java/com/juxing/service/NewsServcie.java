@@ -25,6 +25,11 @@ public interface NewsServcie {
      */
     RespObj getAllNews(Integer page);
 
+    /**
+     * 展示指定的新闻
+     * @param id 新闻的id
+     * @return 指定的新闻数据
+     */
     RespObj getOneNews(Integer id);
 
 

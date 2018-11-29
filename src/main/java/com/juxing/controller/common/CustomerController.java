@@ -1,4 +1,4 @@
-package com.juxing.controller;
+package com.juxing.controller.common;
 
 import com.juxing.common.vo.Resp;
 import com.juxing.common.vo.RespObj;

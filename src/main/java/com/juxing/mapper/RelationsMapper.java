@@ -8,9 +8,6 @@ public interface RelationsMapper {
 
     int insert(Relations record);
 
-
-
-
     /**
      * 查询该用户的关系表
      *
@@ -18,6 +15,14 @@ public interface RelationsMapper {
      * @return 用户的关系表
      */
     List<Relations> selectList(String openid);
+
+    /**
+     * 查找属于渠道的用户关系
+     * @param openId 渠道的openId
+     * @return
+     */
+    List<Relations> selectUserList(String openId);
+
 
     /**
      * 查找用户的子关系
@@ -47,6 +52,13 @@ public interface RelationsMapper {
      * @return
      */
     int updateServiceRelation(Relations relations);
+
+    /**
+     * 更新用户的全部关系信息（渠道注册时，扫描其他二维码进入公众号，关系信息错误）
+     * @param relation
+     * @return
+     */
+    int updateAllRelation(Relations relation);
 
     int deleteByPrimaryKey(Integer id);
 

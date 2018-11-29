@@ -3,9 +3,10 @@ package com.juxing.pojo.reqPojo;
 /**
  * @Auther: Mr.Liu
  * @Date: 2018/11/9 10
- * @Description: 查询实体类，查询结果需分页
+ * @Description:
+ * 多个参数的请求实体类（查询结果需分页）
  */
-public class SearchRequestList {
+public class RequestList {
 
     //查询字段1
     private String text;

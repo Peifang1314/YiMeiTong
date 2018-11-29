@@ -1,11 +1,11 @@
-package com.juxing.controller;
+package com.juxing.controller.common;
 
 import com.juxing.common.vo.Resp;
 
 import com.juxing.common.vo.RespObj;
 import com.juxing.pojo.mysqlPojo.Orders;
-import com.juxing.pojo.reqPojo.SearchRequest;
-import com.juxing.pojo.reqPojo.SearchRequestList;
+import com.juxing.pojo.reqPojo.RequestList;
+import com.juxing.service.DesignerService;
 import com.juxing.service.OrderService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -23,6 +23,8 @@ import org.springframework.web.bind.annotation.RestController;
 public class OrderController {
     @Autowired
     private OrderService orderService;
+    @Autowired
+    private DesignerService designerService;
 
     /**
      * 订单生成，并存储用户
@@ -42,7 +44,7 @@ public class OrderController {
      * @return
      */
     @RequestMapping("/getAllOrders")
-    public RespObj getAllOrders(@RequestBody SearchRequestList request) {
+    public RespObj getAllOrders(@RequestBody RequestList request) {
         return orderService.getAllOrders(request.getText(), request.getNum(), request.getPage());
     }
 
@@ -53,8 +55,10 @@ public class OrderController {
      * @return
      */
     @RequestMapping("/getAllCus")
-    public RespObj getAllCus(@RequestBody SearchRequestList request) {
-        return orderService.getAllCus(request.getText(), request.getPage());
+    public RespObj getAllCus(@RequestBody RequestList request) {
+        String openId = request.getText();
+        int page = request.getPage();
+        return orderService.getAllCus(openId, page);
     }
 
     /**
@@ -64,17 +68,37 @@ public class OrderController {
      * @return 获得消费者的所有订单(以电话号码区分)
      */
     @RequestMapping("/getOrdersByCusPhone")
-    public RespObj getOrdersByCusName(@RequestBody SearchRequestList request) {
+    public RespObj getOrdersByCusName(@RequestBody RequestList request) {
         return orderService.getOrdersByCusPhone(request.getText(), request.getPage());
     }
 
     /**
+     * 根据姓名或者电话查找
+     *
      * @param request 查询实体类
      * @return 模糊查询（姓名/电话）该用户的订单信息
      */
     @RequestMapping("/getCusByText")
-    public RespObj getOrdersByText(@RequestBody SearchRequestList request) {
-        return orderService.getOrdersByText(request.getText(), request.getText1(), request.getPage());
+    public RespObj getOrdersByText(@RequestBody RequestList request) {
+        String openId = request.getText();
+        String text = request.getText1();
+        int page = request.getPage();
+        return orderService.getOrdersByText(openId, text, page);
+    }
+
+    /**
+     * 根据单号或者姓名查找
+     *
+     * @param request 订单创建者的openId，单号或者姓名，订单状态，第X页
+     * @return 模糊查询的订单信息
+     */
+    @RequestMapping("/getCusByText2")
+    public RespObj getOrdersByText2(@RequestBody RequestList request) {
+        String openId = request.getText();
+        String text = request.getText1();
+        int num = request.getNum();
+        int page = request.getPage();
+        return orderService.getOrdersByText2(openId, text, num, page);
     }
 
 
@@ -83,8 +107,16 @@ public class OrderController {
      * @return 根据订单号查询出的订单
      */
     @RequestMapping("/getOrdersByOid")
-    public RespObj getOrdersByOid(@RequestBody SearchRequestList request) {
+    public RespObj getOrdersByOid(@RequestBody RequestList request) {
         return orderService.getOrdersByOid(request.getText(), request.getText1());
+    }
+
+    /**
+     * @return 所有的设计师
+     */
+    @RequestMapping("/getDesigners")
+    public RespObj getDesigners() {
+        return designerService.getDesigners();
     }
 
 

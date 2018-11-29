@@ -23,9 +23,17 @@ public class User {
 
     private Integer userStatus;
 
+    private String userNotallow;
+
     private Integer userRole;
 
     private String userShorturl;
+
+    private String serviceOpenid;
+
+    private String serviceId;
+
+    private String serviceName;
 
     private String servicePhone;
 
@@ -113,6 +121,14 @@ public class User {
         this.userStatus = userStatus;
     }
 
+    public String getUserNotallow() {
+        return userNotallow;
+    }
+
+    public void setUserNotallow(String userNotallow) {
+        this.userNotallow = userNotallow == null ? null : userNotallow.trim();
+    }
+
     public Integer getUserRole() {
         return userRole;
     }
@@ -127,6 +143,30 @@ public class User {
 
     public void setUserShorturl(String userShorturl) {
         this.userShorturl = userShorturl == null ? null : userShorturl.trim();
+    }
+
+    public String getServiceOpenid() {
+        return serviceOpenid;
+    }
+
+    public void setServiceOpenid(String serviceOpenid) {
+        this.serviceOpenid = serviceOpenid == null ? null : serviceOpenid.trim();
+    }
+
+    public String getServiceId() {
+        return serviceId;
+    }
+
+    public void setServiceId(String serviceId) {
+        this.serviceId = serviceId == null ? null : serviceId.trim();
+    }
+
+    public String getServiceName() {
+        return serviceName;
+    }
+
+    public void setServiceName(String serviceName) {
+        this.serviceName = serviceName == null ? null : serviceName.trim();
     }
 
     public String getServicePhone() {
@@ -151,5 +191,30 @@ public class User {
 
     public void setIsSync(Integer isSync) {
         this.isSync = isSync;
+    }
+
+    @Override
+    public String toString() {
+        return "User{" +
+                "id=" + id +
+                ", userId='" + userId + '\'' +
+                ", userOpenid='" + userOpenid + '\'' +
+                ", userNickname='" + userNickname + '\'' +
+                ", userHeadimgurl='" + userHeadimgurl + '\'' +
+                ", userName='" + userName + '\'' +
+                ", userShopname='" + userShopname + '\'' +
+                ", userPhone='" + userPhone + '\'' +
+                ", userAddress='" + userAddress + '\'' +
+                ", userStatus=" + userStatus +
+                ", userNotallow='" + userNotallow + '\'' +
+                ", userRole=" + userRole +
+                ", userShorturl='" + userShorturl + '\'' +
+                ", serviceOpenid='" + serviceOpenid + '\'' +
+                ", serviceId='" + serviceId + '\'' +
+                ", serviceName='" + serviceName + '\'' +
+                ", servicePhone='" + servicePhone + '\'' +
+                ", createtime=" + createtime +
+                ", isSync=" + isSync +
+                '}';
     }
 }

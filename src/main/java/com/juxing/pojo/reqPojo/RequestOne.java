@@ -3,16 +3,16 @@ package com.juxing.pojo.reqPojo;
 /**
  * @Auther: Mr.Liu
  * @Date: 2018/10/29 09
- * @Description: 模糊查询的实体类
+ * @Description: 携带一个参数的实体类（模糊查询、设置不通过原因等）
  */
-public class SearchRequest {
+public class RequestOne {
 
     private String text;
 
-    public SearchRequest() {
+    public RequestOne() {
     }
 
-    public SearchRequest(String text) {
+    public RequestOne(String text) {
         this.text = text;
     }
 

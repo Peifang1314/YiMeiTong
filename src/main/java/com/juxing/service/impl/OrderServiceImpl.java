@@ -66,20 +66,25 @@ public class OrderServiceImpl implements OrderService {
                 // 2 保存用户后，保存父级和渠道关系
                 Relations relations = relationsMapper.selectRelation(orders.getOrderRefer());
                 // 2.1 订单内存储用户的父级信息（openID ID name）
-                if (relations.getFatherId()!=null){
+                if (relations.getFatherId() != null) {
                     // 父级存在，存储
                     User father = userMapper.selectByOpenid(relations.getFatherId());
-                    orders.setOrderFatherOpenid(father.getUserOpenid());
-                    orders.setOrderFatherId(father.getUserId());
-                    orders.setOrderFatherName(father.getUserName());
+                    if (father!=null){
+                        orders.setOrderFatherOpenid(father.getUserOpenid());
+                        orders.setOrderFatherId(father.getUserId());
+                        orders.setOrderFatherName(father.getUserName());
+                    }
+
                 }
                 // 2.2 订单内存储用户的渠道信息（openID ID name）
-                if (relations.getServiceId()!=null){
+                if (relations.getServiceId() != null) {
                     // 渠道存在，存储
                     User service = userMapper.selectByOpenid(relations.getServiceId());
-                    orders.setOrderServiceOpenid(service.getUserOpenid());
-                    orders.setOrderServiceId(service.getUserId());
-                    orders.setOrderServiceName(service.getUserName());
+                    if (service!=null){
+                        orders.setOrderServiceOpenid(service.getUserOpenid());
+                        orders.setOrderServiceId(service.getUserId());
+                        orders.setOrderServiceName(service.getUserName());
+                    }
                 }
                 int i = ordersMapper.insert(orders);
                 if (i > 0) {
@@ -97,35 +102,39 @@ public class OrderServiceImpl implements OrderService {
             // 2 保存用户后，保存父级和渠道关系
             Relations relations = relationsMapper.selectRelation(orders.getOrderRefer());
             // 2.1 订单内存储用户的父级信息（openID ID name）
-            if (relations.getFatherId()!=null){
+            if (relations.getFatherId() != null) {
                 // 父级存在，存储
                 User father = userMapper.selectByOpenid(relations.getFatherId());
-                orders.setOrderFatherOpenid(father.getUserOpenid());
-                orders.setOrderFatherId(father.getUserId());
-                orders.setOrderFatherName(father.getUserName());
+                if (father!=null){
+                    orders.setOrderFatherOpenid(father.getUserOpenid());
+                    orders.setOrderFatherId(father.getUserId());
+                    orders.setOrderFatherName(father.getUserName());
+                }
             }
             // 2.2 订单内存储用户的渠道信息（openID ID name）
-            if (relations.getServiceId()!=null){
+            if (relations.getServiceId() != null) {
                 // 渠道存在，存储
                 User service = userMapper.selectByOpenid(relations.getServiceId());
-                orders.setOrderServiceOpenid(service.getUserOpenid());
-                orders.setOrderServiceId(service.getUserId());
-                orders.setOrderServiceName(service.getUserName());
+                if (service!=null){
+                    orders.setOrderServiceOpenid(service.getUserOpenid());
+                    orders.setOrderServiceId(service.getUserId());
+                    orders.setOrderServiceName(service.getUserName());
+                }
             }
             // 同一用户当天只能提交一次订单
             Orders theNewOrder = ordersMapper.selectNew(orders.getCusPhone());
             String nowTime = DateUtil.getDate();
             String orderTime = DateUtil.formatDate2(theNewOrder.getCreatetime());
-            int t = Integer.valueOf(nowTime)-Integer.valueOf(orderTime);
-            if (t>=1){
+            int t = Integer.valueOf(nowTime) - Integer.valueOf(orderTime);
+            if (t >= 1) {
                 //生成订单
                 if (ordersMapper.insert(orders) > 0) {
                     return new Resp(200, "用户存在，订单生成", 1);
                 } else {
                     return new Resp(200, "用户存在，订单未生成", 0);
                 }
-            }else {
-                return new Resp(800,"同一用户当天只能生成一个订单",0);
+            } else {
+                return new Resp(800, "同一用户当天只能生成一个订单", 0);
             }
         }
     }
@@ -134,7 +143,6 @@ public class OrderServiceImpl implements OrderService {
     @Override
     public RespObj getOrdersByCusPhone(String cusPhone, int page) {
         List<Orders> ordersList = ordersMapper.selectByCus(cusPhone, page);
-        System.out.println("消费者订单：" + ordersList);
         if (null != ordersList) {
             return new RespObj(200, "success", 1, ordersList);
         } else {
@@ -156,8 +164,8 @@ public class OrderServiceImpl implements OrderService {
 
     //模糊查询订单（电话/姓名）
     @Override
-    public RespObj getOrdersByText(String openid, String text, int page) {
-        List<Orders> ordersList = ordersMapper.selectByText(openid, text, page);
+    public RespObj getOrdersByText(String openId, String text, int page) {
+        List<Orders> ordersList = ordersMapper.selectByText(openId, text, page);
         if (null != ordersList) {
             return new RespObj(200, "success", 1, ordersList);
         } else {
@@ -165,6 +173,15 @@ public class OrderServiceImpl implements OrderService {
         }
     }
 
+    @Override
+    public RespObj getOrdersByText2(String openId, String text, int num, int page) {
+        List<Orders> ordersList = ordersMapper.selectByText2(openId, text, num, page);
+        if (Objects.equals(null, ordersList)) {
+            return RespObj.error();
+        } else {
+            return new RespObj(200, "success", 1, ordersList);
+        }
+    }
 
     //该用下所有消费者
     @Override

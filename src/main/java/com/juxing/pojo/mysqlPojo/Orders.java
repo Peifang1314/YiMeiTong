@@ -2,70 +2,65 @@ package com.juxing.pojo.mysqlPojo;
 
 import java.util.Date;
 
-/**
- * @Auther: Mr.Liu
- * @Date: 2018/11/21 10
- * @Description: 订单的实体类
- */
-
 public class Orders {
-    //主键
     private Integer id;
-    //订单ID
+
     private String orderId;
-    //订单的项目
+
     private String orderProject;
-    //订单的设计师
+
     private String orderDesigner;
-    //订单金额
+
     private String orderMoney;
-    //订单创建者的openID
+
     private String orderRefer;
-    //创建者的ID
+
     private String orderUserid;
-    //创建者的姓名
+
     private String orderUsername;
-    //创建者父级的openID
+
     private String orderFatherOpenid;
-    //创建者父级的ID
+
     private String orderFatherId;
-    //创建者父级的姓名
+
     private String orderFatherName;
-    //创建者渠道的openID
+
     private String orderServiceOpenid;
-    //创建者渠道的ID
+
     private String orderServiceId;
-    //创建者渠道的姓名
+
     private String orderServiceName;
-    //订单的店名
+
     private String orderShopname;
-    //订单的返款金额
+
     private String orderDismoney;
-    //订单父级的的返款金额
+
     private String orderFatherDismoney;
-    //订单的创建时间
+
     private String orderCometime;
-    //顾客的ID
+
     private String cusId;
-    //顾客的姓名
+
     private String cusName;
-    //顾客的性别
+
     private Integer cusSex;
-    //顾客的电话
+
     private String cusPhone;
-    //订单的创建时间
+
     private Date createtime;
-    //订单的付款时间
+
     private String orderPaytime;
-    //订单的返款时间
+
     private String orderDistime;
-    //订单的提交者 1-店家 2-渠道
+
     private Integer orderSubstatus;
-    //订单的状态
+
     private Integer orderStatus;
-    //订单的备注信息
+
     private String orderNotes;
-    //是否同步
+    //渠道备注
+    private String orderSecondNotes;
+
     private Integer isSync;
 
     public Integer getId() {
@@ -292,6 +287,14 @@ public class Orders {
         this.orderNotes = orderNotes == null ? null : orderNotes.trim();
     }
 
+    public String getOrderSecondNotes() {
+        return orderSecondNotes;
+    }
+
+    public void setOrderSecondNotes(String orderSecondNotes) {
+        this.orderSecondNotes = orderSecondNotes == null ? null : orderSecondNotes.trim();
+    }
+
     public Integer getIsSync() {
         return isSync;
     }
@@ -331,6 +334,7 @@ public class Orders {
                 ", orderSubstatus=" + orderSubstatus +
                 ", orderStatus=" + orderStatus +
                 ", orderNotes='" + orderNotes + '\'' +
+                ", orderSecondNotes='" + orderSecondNotes + '\'' +
                 ", isSync=" + isSync +
                 '}';
     }

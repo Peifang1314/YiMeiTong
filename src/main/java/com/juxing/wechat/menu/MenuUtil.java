@@ -34,7 +34,7 @@ public class MenuUtil {
         ViewButton btn32 = new ViewButton();
         btn32.setName("渠道注册");
         btn32.setType("view");
-        btn32.setUrl("http://m.superstar.vc");
+        btn32.setUrl("http://m.superstar.vc/flinto");
 
         //复合按钮包含2个click类型的按钮
         ComplexButton btn3 = new ComplexButton();

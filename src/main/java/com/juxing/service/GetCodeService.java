@@ -10,7 +10,7 @@ import com.juxing.common.vo.RespObj;
 public interface GetCodeService {
 
     /**
-     *
+     * 向用户发送手机号
      * @param phone 发送的手机号码
      * @return
      */

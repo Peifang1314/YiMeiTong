@@ -1,7 +1,7 @@
-package com.juxing.controller;
+package com.juxing.controller.shoper;
 
 import com.juxing.common.vo.RespObj;
-import com.juxing.pojo.reqPojo.SearchRequest;
+import com.juxing.pojo.reqPojo.RequestOne;
 import com.juxing.service.HeadimgService;
 import com.juxing.service.IndexService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -12,7 +12,7 @@ import org.springframework.web.bind.annotation.RestController;
 /**
  * @Auther: Mr.Liu
  * @Date: 2018/11/12 14
- * @Description: 首页的controller层
+ * @Description: 店家首页的controller层
  *
  */
 @RestController
@@ -32,7 +32,7 @@ public class indexController {
      * @return
      */
     @RequestMapping("/getIndex")
-    public RespObj getIndex(@RequestBody SearchRequest request){
+    public RespObj getIndex(@RequestBody RequestOne request){
         return indexService.getIndex(request.getText());
     }
 
@@ -42,7 +42,7 @@ public class indexController {
      * @return
      */
     @RequestMapping("/getMyTotalInfo")
-    public RespObj getMyInfo(@RequestBody SearchRequest request){
+    public RespObj getMyInfo(@RequestBody RequestOne request){
         return indexService.getMyInfo(request.getText());
     }
 

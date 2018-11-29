@@ -1,9 +1,9 @@
-package com.juxing.controller;
+package com.juxing.controller.common;
 
 import com.juxing.common.vo.Resp;
 import com.juxing.common.vo.RespObj;
 import com.juxing.pojo.mysqlPojo.News;
-import com.juxing.pojo.reqPojo.SearchRequest;
+import com.juxing.pojo.reqPojo.RequestOne;
 import com.juxing.service.NewsServcie;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
@@ -42,7 +42,7 @@ public class NewsController {
     }
 
     @RequestMapping("/getOneNews")
-    public RespObj getOneNews(@RequestBody SearchRequest request) {
+    public RespObj getOneNews(@RequestBody RequestOne request) {
         int id = Integer.valueOf(request.getText());
         return newsServcie.getOneNews(id);
     }

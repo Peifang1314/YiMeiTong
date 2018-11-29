@@ -33,19 +33,19 @@ public class WechatQRcodeServiceImpl implements WechatQRcodeService {
     @Override
     public String createForeverQRcode(String access_Token, String scene_str) {
         String shortUrl = null;
+        // scene_str 为1+openId 或2+openId
+        User user = userMapper.selectByOpenid(scene_str.substring(1));
 
-        User user = userMapper.selectByOpenid(scene_str);
-
-        if (Objects.equals(null, user.getUserShorturl())) {
+        if (Objects.equals(null, user.getUserShorturl())||Objects.equals(0,user.getUserShorturl().length())) {
             //用户信息里没有二维码短链接，生成一个新的
-            TreeMap<String, String> params = new TreeMap<>();
+            TreeMap<String, String> params = new TreeMap();
             params.put("access_token", access_Token);
             // output data
-            Map<String, String> intMap = new HashMap<>();
+            Map<String, String> intMap = new HashMap();
             intMap.put("scene_str", scene_str);
-            Map<String, Map<String, String>> mapMap = new HashMap<>();
+            Map<String, Map<String, String>> mapMap = new HashMap();
             mapMap.put("scene", intMap);
-            Map<String, Object> paramsMap = new HashMap<>();
+            Map<String, Object> paramsMap = new HashMap();
             paramsMap.put("action_name", "QR_LIMIT_STR_SCENE");
             paramsMap.put("action_info", mapMap);
 

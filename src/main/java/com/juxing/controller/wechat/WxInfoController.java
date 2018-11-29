@@ -1,12 +1,10 @@
-package com.juxing.controller;
+package com.juxing.controller.wechat;
 
 import com.alibaba.fastjson.JSONObject;
 import com.juxing.common.util.CommonUtil;
 import com.juxing.common.util.SHA1;
 import com.juxing.common.util.SignUtil;
-import com.juxing.common.vo.RespObj;
 import com.juxing.pojo.wechatPojo.App;
-import com.juxing.pojo.wechatPojo.MyToken;
 import com.juxing.service.MyTokenService;
 import com.juxing.service.WechatCoreService;
 import org.apache.commons.lang3.RandomStringUtils;
@@ -21,7 +19,6 @@ import java.io.*;
 import java.util.HashMap;
 import java.util.Map;
 
-import com.juxing.service.RelaService;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 /**
@@ -34,9 +31,6 @@ import org.springframework.web.bind.annotation.ResponseBody;
 @Controller
 @RequestMapping("/weixin")
 public class WxInfoController {
-
-    @Autowired
-    private RelaService relaService;
 
     @Autowired
     private WechatCoreService wechatService;

@@ -30,6 +30,7 @@
         <result column="order_substatus" property="orderSubstatus" jdbcType="INTEGER"/>
         <result column="order_status" property="orderStatus" jdbcType="INTEGER"/>
         <result column="order_notes" property="orderNotes" jdbcType="VARCHAR"/>
+        <result column="order_second_notes" property="orderSecondNotes" jdbcType="VARCHAR"/>
         <result column="is_sync" property="isSync" jdbcType="INTEGER"/>
     </resultMap>
     <sql id="Base_Column_List">
@@ -37,8 +38,9 @@
     order_username, order_father_openid, order_father_id, order_father_name, order_service_openid, 
     order_service_id, order_service_name, order_shopname, order_dismoney, order_father_dismoney, 
     order_cometime, cus_id, cus_name, cus_sex, cus_phone, createtime, order_paytime, 
-    order_distime, order_substatus, order_status, order_notes, is_sync
-  </sql>
+    order_distime, order_substatus, order_status, order_notes, order_second_notes, is_sync
+    </sql>
+
     <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Integer">
         select
         <include refid="Base_Column_List"/>
@@ -64,7 +66,7 @@
         cus_name, cus_sex, cus_phone,
         createtime, order_paytime, order_distime,
         order_substatus, order_status, order_notes,
-        is_sync)
+        order_second_notes, is_sync)
         values (#{orderId,jdbcType=VARCHAR}, #{orderProject,jdbcType=VARCHAR}, #{orderDesigner,jdbcType=VARCHAR},
         0, #{orderRefer,jdbcType=VARCHAR}, #{orderUserid,jdbcType=VARCHAR},
         #{orderUsername,jdbcType=VARCHAR}, #{orderFatherOpenid,jdbcType=VARCHAR}, #{orderFatherId,jdbcType=VARCHAR},
@@ -74,7 +76,7 @@
         #{cusName,jdbcType=VARCHAR}, #{cusSex,jdbcType=INTEGER}, #{cusPhone,jdbcType=VARCHAR},
         now(), #{orderPaytime,jdbcType=TIMESTAMP}, #{orderDistime,jdbcType=TIMESTAMP},
         #{orderSubstatus,jdbcType=INTEGER}, 1, #{orderNotes,jdbcType=VARCHAR},
-        0)
+        #{orderSecondNotes,jdbcType=VARCHAR}, 0)
     </insert>
 
     <select id="selectByRefer" resultMap="BaseResultMap">
@@ -90,8 +92,18 @@
         select
         <include refid="Base_Column_List"/>
         from
-        (select * from ymt_orders where order_refer = #{openid}) t
-        where cus_name like "%"#{text}"%" or cus_phone like "%"#{text}"%" or order_id like "%"#{text}"%"
+        (select * from ymt_orders where order_refer = #{openId}) t
+        where cus_name like "%"#{text}"%" or cus_phone like "%"#{text}"%"
+        order by createtime desc
+        LIMIT 10 offset ${(page-1)*10}
+    </select>
+
+    <select id="selectByText2" resultMap="BaseResultMap">
+        select
+        <include refid="Base_Column_List"/>
+        from
+        (select * from ymt_orders where order_refer = #{openId} and order_status = #{num}) t
+        where cus_name like "%"#{text}"%" or order_id like "%"#{text}"%"
         order by createtime desc
         LIMIT 10 offset ${(page-1)*10}
     </select>
@@ -101,7 +113,7 @@
         <include refid="Base_Column_List"/>
         from ymt_orders
         where order_refer = #{openid}
-        group by cus_name
+        group by cus_phone
         order by createtime desc
         LIMIT 10 offset ${(page-1)*10}
     </select>
@@ -160,6 +172,33 @@
         LIMIT 1;
     </select>
 
+    <select id="selectByServiceOpenid" resultMap="BaseResultMap">
+        select
+        <include refid="Base_Column_List"/>
+        from ymt_orders
+        where order_service_openid = #{openId}
+        and order_substatus = 1;
+    </select>
+
+    <update id="updateByOid" parameterType="com.juxing.pojo.mysqlPojo.Orders">
+        update ymt_orders
+        set order_project = #{orderProject,jdbcType=VARCHAR},
+          order_designer = #{orderDesigner,jdbcType=VARCHAR},
+          order_money = #{orderMoney,jdbcType=VARCHAR},
+          order_shopname = #{orderShopname,jdbcType=VARCHAR},
+          order_dismoney = #{orderDismoney,jdbcType=VARCHAR},
+          order_father_dismoney = #{orderFatherDismoney,jdbcType=VARCHAR},
+          order_cometime = #{orderCometime,jdbcType=TIMESTAMP},
+          order_paytime = #{orderPaytime,jdbcType=TIMESTAMP},
+          order_distime = #{orderDistime,jdbcType=TIMESTAMP},
+          order_substatus = 2,
+          order_status = #{orderStatus,jdbcType=INTEGER},
+          order_notes = #{orderNotes,jdbcType=VARCHAR},
+          order_second_notes = #{orderSecondNotes,jdbcType=VARCHAR},
+          is_sync = #{isSync,jdbcType=INTEGER}
+        where order_id = #{orderId,jdbcType=VARCHAR}
+    </update>
+
     <update id="updateByPrimaryKey" parameterType="com.juxing.pojo.mysqlPojo.Orders">
     update ymt_orders
     set order_id = #{orderId,jdbcType=VARCHAR},
@@ -189,7 +228,8 @@
       order_substatus = #{orderSubstatus,jdbcType=INTEGER},
       order_status = #{orderStatus,jdbcType=INTEGER},
       order_notes = #{orderNotes,jdbcType=VARCHAR},
+      order_second_notes = #{orderSecondNotes,jdbcType=VARCHAR},
       is_sync = #{isSync,jdbcType=INTEGER}
     where id = #{id,jdbcType=INTEGER}
-  </update>
+    </update>
 </mapper>

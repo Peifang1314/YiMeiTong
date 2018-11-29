@@ -1,7 +1,6 @@
 package com.juxing.service.impl;
 
 import com.juxing.common.util.IdUtil;
-import com.juxing.common.util.SessionUtil;
 import com.juxing.common.vo.RespObj;
 import com.juxing.common.vo.Resp;
 import com.juxing.mapper.PhoneCodeMapper;
@@ -13,12 +12,13 @@ import com.juxing.miaodiyun.httpApiDemo.common.RandUtil;
 import com.juxing.pojo.mysqlPojo.PhoneCode;
 import com.juxing.pojo.mysqlPojo.Relations;
 import com.juxing.pojo.mysqlPojo.User;
-import com.juxing.pojo.reqPojo.SearchRequest;
+import com.juxing.pojo.reqPojo.RequestOne;
 import com.juxing.pojo.wechatPojo.UserInfo;
 import com.juxing.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
@@ -33,13 +33,12 @@ public class UserServiceImpl implements UserService {
 
     @Autowired
     private UserMapper userMapper;
-
     @Autowired
     private PhoneCodeMapper phoneCodeMapper;
-
     @Autowired
     private UserInfoMapper userInfoMapper;
-
+    @Autowired
+    private RelationsMapper relationsMapper;
 
 
     /**
@@ -56,7 +55,54 @@ public class UserServiceImpl implements UserService {
         String userOpenid = user.getUserOpenid();
 
         User user2 = userMapper.selectByOpenid(userOpenid);
+        // 用户注册先判断用户角色 1 店家 2 渠道
+
+        if (Objects.equals(1, userRole)) {
+            // 店家注册
+            Relations relation = relationsMapper.selectRelation(userOpenid);
+            if (relation != null) {
+                // 关系不为空，扫码注册，有上级或渠道
+                String serviceOpenid = relation.getServiceId();
+                if (serviceOpenid != null) {
+                    // 渠道的信息实体类存在
+                    User servicer = userMapper.selectByOpenid(relation.getServiceId());
+                    // 用户渠道的信息
+                    user.setServiceOpenid(servicer.getUserOpenid());
+                    user.setServiceId(servicer.getUserId());
+                    user.setServiceName(servicer.getUserName());
+                    user.setServicePhone(servicer.getUserPhone());
+                }
+            } else {
+                // 店家直接注册，管理员信息作为上级和渠道的值
+                String fatherId = "管理员ID";
+                String serviceId = "管理员ID";
+                Relations theRela = new Relations();
+                theRela.setUserId(userOpenid);
+                theRela.setFatherId(fatherId);
+                theRela.setServiceId(serviceId);
+                relationsMapper.insert(theRela);
+            }
+        } else {
+            // 2 渠道人员注册 管理员信息作为上级和渠道的值
+            String fatherId = "管理员ID";
+            String serviceId = "管理员ID";
+            Relations theRela = new Relations();
+            theRela.setUserId(userOpenid);
+            theRela.setFatherId(fatherId);
+            theRela.setServiceId(serviceId);
+            // 2.1 查看关系表
+            Relations relation = relationsMapper.selectRelation(userOpenid);
+            if (Objects.equals(null, relation)) {
+                // 2.2 没有关系表存在--》存储
+                relationsMapper.insert(theRela);
+            } else {
+                // 2.3 有关系表存在--》更新为正确的关系信息
+                // （解决渠道人员扫描其他带参二维码进入公众号，关系表内数据错误的情况）
+                relationsMapper.updateAllRelation(theRela);
+            }
+        }
         if (null != user2) {
+            // 用户存在
             return new Resp(200, "用户已注册，审核中", 0);
         } else {
             //判断用户名是否为空
@@ -85,13 +131,24 @@ public class UserServiceImpl implements UserService {
         }
     }
 
-
     @Override
     public RespObj saveUserinfo(UserInfo userInfo) {
-        if (userInfoMapper.insert(userInfo)>0){
-            return new RespObj(200,"第一次使用，微信数据存储",6,userInfo);
-        }else {
-            return new RespObj(800,"微信数据存储失败",0,null);
+        // 存储用户微信数据要判断是否存在
+        String opneId = userInfo.getUserOpenid();
+        UserInfo theUser = userInfoMapper.selectByOpenid(opneId);
+        if (Objects.equals(null, theUser)) {
+            // 用户微信数据不存在--》存储
+            if (userInfoMapper.insert(userInfo) > 0) {
+                return new RespObj(200, "第一次使用，微信数据存储", 6, userInfo);
+            } else {
+                return new RespObj(800, "微信数据存储失败", 0, null);
+            }
+        } else {
+            if (userInfoMapper.updateUserInfo(userInfo) > 0) {
+                return new RespObj(200, "微信数据存在，更新", 6, userInfo);
+            } else {
+                return new RespObj(800, "微信数据存储失败", 0, null);
+            }
         }
     }
 
@@ -103,13 +160,13 @@ public class UserServiceImpl implements UserService {
         //2、更新用户的昵称、头像等可变信息
         //判断用户的角色，店家改姓名，渠道不改姓名
         user = userMapper.selectByOpenid(userInfo.getUserOpenid());
-        if (Objects.equals(1,user.getUserRole())){
+        if (Objects.equals(1, user.getUserRole())) {
             //用户角色为1--店家，改昵称、头像、姓名
             user.setUserNickname(userInfo.getNickname());
             user.setUserHeadimgurl(userInfo.getHeadimgurl());
             user.setUserName(userInfo.getNickname());
             userMapper.updateUser(user);
-        }else {
+        } else {
             //用户角色为2--渠道，改昵称、头像
             user.setUserNickname(userInfo.getNickname());
             user.setUserHeadimgurl(userInfo.getHeadimgurl());
@@ -132,18 +189,14 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public Resp updateUserStatus(String openid) {
+    public Resp setUserAllow(String openid) {
         User user = userMapper.selectByOpenid(openid);
-        System.out.println("impl-openid:" + openid);
-        if (userMapper.updataUserstatus(user) > 0) {
+        if (userMapper.updateUserStatus(user) > 0) {
             return Resp.ok();
         } else {
             return Resp.error();
         }
     }
-
-
-
 
     @Override
     public RespObj phoneCheck(String phone) {
@@ -160,17 +213,21 @@ public class UserServiceImpl implements UserService {
         return userMapper.selectByOpenid(userOpenid);
     }
 
-    /**
-     * 模糊查询，号码或用户名
-     *
-     * @param
-     * @return
-     */
+
     @Override
-    public RespObj getUsers(SearchRequest request) {
+    public RespObj getMyUserByStatus(String openId, int status, int page) {
+        List<User> userList = userMapper.selectUsersByStatus(openId, status, page);
+        if (Objects.equals(null, userList)) {
+            return RespObj.error();
+        } else {
+            return RespObj.setObjs(userList);
+        }
+    }
+
+    @Override
+    public RespObj getUsers(RequestOne request) {
         String text = request.getText();
         List<User> lists = userMapper.selectByText(text);
-
         System.out.println(lists);
         if (null == lists) {
             return new RespObj(800, "error", 0, null);
@@ -179,12 +236,37 @@ public class UserServiceImpl implements UserService {
         }
     }
 
-    /**
-     * 验证码发送
-     *
-     * @param phoneCode
-     * @return
-     */
+    @Override
+    public RespObj getMyUsersByName(String openId, String shopName) {
+        // 1. 先找到下级店家，然后分页
+        List<User> shopUser = null;
+        // 1.1 所有下级店家
+        List<Relations> relations = relationsMapper.selectUserList(openId);
+        // 1.2 下级店家的openId
+        List openList = new ArrayList();
+        for (Relations rela : relations) {
+            openList.add(rela.getUserId());
+        }
+        // 下级店家存在
+        if (openList != null && openList.size() > 0) {
+            //模糊查询的店家
+            shopUser = userMapper.selectUsersByName(openList, shopName);
+            return new RespObj(200, "店家来源", 1, shopUser);
+        } else {
+            return RespObj.error();
+        }
+    }
+
+    @Override
+    public Resp setUserNotAllow(String openId, String notAllow) {
+        int i = userMapper.updateUserNotAllow(openId, notAllow);
+        if (i > 0) {
+            return new Resp(200, "拒绝原因写入", 1);
+        } else {
+            return Resp.error();
+        }
+    }
+
     @Override
     public RespObj getPhoneCode(PhoneCode phoneCode) {
         String phone = phoneCode.getPhone();
@@ -200,4 +282,5 @@ public class UserServiceImpl implements UserService {
             return new RespObj(800, "error", 0);
         }
     }
+
 }

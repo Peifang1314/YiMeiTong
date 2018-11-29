@@ -29,13 +29,23 @@ public interface OrderService {
     RespObj getAllOrders(String orderRefer, int status, int page);
 
     /**
-     * @param openid 用户openid
+     * 根据电话或者姓名查找订单
+     * @param openId 订单创建者的openId
      * @param text   电话/姓名
      * @param page   第X页
-     * @return 通过模糊查询订单，使用其中的用户数据
+     * @return 模糊查询出的订单
      */
-    RespObj getOrdersByText(String openid, String text, int page);
+    RespObj getOrdersByText(String openId, String text, int page);
 
+    /**
+     * 根据单号或者姓名查找
+     * @param openId 订单创建者的openId
+     * @param text 单号/姓名
+     * @param num 订单状态
+     * @param page 第X页
+     * @return 模糊查询的订单信息
+     */
+    RespObj getOrdersByText2(String openId, String text,int num, int page);
 
 
     /**

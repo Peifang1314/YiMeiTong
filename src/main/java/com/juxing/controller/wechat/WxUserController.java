@@ -1,9 +1,11 @@
-package com.juxing.controller;
+package com.juxing.controller.wechat;
 
 import com.juxing.common.util.AdvancedUtil;
+import com.juxing.common.util.DateUtil;
 import com.juxing.common.vo.RespObj;
+import com.juxing.mapper.UserInfoMapper;
 import com.juxing.pojo.mysqlPojo.User;
-import com.juxing.pojo.reqPojo.SearchRequest;
+import com.juxing.pojo.reqPojo.RequestOne;
 import com.juxing.pojo.wechatPojo.*;
 import com.juxing.service.MyTokenService;
 import com.juxing.service.UserService;
@@ -62,6 +64,7 @@ public class WxUserController {
 
             if (null == user) {
                 //用户第一次进入，先保存用户的微信数据
+                System.out.println("第一次进入"+ DateUtil.getNow());
                 return userService.saveUserinfo(userInfo);
             } else {
                 //已注册，判断用户状态 审核中或已通过
@@ -86,13 +89,13 @@ public class WxUserController {
      * @return
      */
     @RequestMapping("/getUserStatus")
-    public RespObj getUserStatus(@RequestBody SearchRequest request) {
+    public RespObj getUserStatus(@RequestBody RequestOne request) {
         String openId = request.getText();
         User user = userService.getUser(openId);
         if (Objects.equals(null, user)) {
             return RespObj.error();
         } else {
-            return new RespObj(200, "success", 1, user.getUserStatus());
+            return new RespObj(200, "success",user.getUserStatus(), user);
         }
     }
 
@@ -103,7 +106,7 @@ public class WxUserController {
      * @return
      */
     @RequestMapping("/getForeverQRcode")
-    public RespObj getForeverQRcode(@RequestBody SearchRequest request) {
+    public RespObj getForeverQRcode(@RequestBody RequestOne request) {
         String openId = request.getText();
         String accessToken = myTokenService.getAccessToken();
         String shortUrl = wechatQRcodeService.createForeverQRcode(accessToken, openId);
@@ -123,7 +126,7 @@ public class WxUserController {
      * @return
      */
     @RequestMapping("/getTempQRcode")
-    public RespObj getWechatPic(@RequestBody SearchRequest request) {
+    public RespObj getWechatPic(@RequestBody RequestOne request) {
         // 参数为用户的OpenID，形成上下级关系
         String datas = request.getText();
         // 获取数据库内存储的accessToken值,防止token重复刷新达到使用上限（2000）

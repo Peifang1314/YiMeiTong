@@ -10,6 +10,11 @@ import com.juxing.pojo.mysqlPojo.Customer;
  */
 public interface CustomerService {
 
+    /**
+     * 顾客新增，该功能合并到订单新增内
+     * @param customer
+     * @return
+     */
     Resp customerSave(Customer customer);
 
 }

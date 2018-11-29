@@ -62,8 +62,13 @@ public class RespObj {
     public static RespObj ok() {
         return new RespObj(200, "success", 1, null);
     }
-    public static RespObj error(){
-        return new RespObj(800,"error",0,null);
+
+    public static RespObj error() {
+        return new RespObj(800, "error", 0, null);
+    }
+
+    public static RespObj setObjs(Object obj) {
+        return new RespObj(200, "success", 1, obj);
     }
 
 }

@@ -16,6 +16,7 @@ import com.juxing.pojo.wechatPojo.Ticket;
 import com.juxing.pojo.wechatPojo.Token;
 import com.juxing.service.WechatCoreService;
 import com.juxing.wechat.message.resp.TextMessage;
+import org.apache.zookeeper.Op;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -99,12 +100,15 @@ public class WechatCoreServiceImpl implements WechatCoreService {
                 char a = trueKey.charAt(0);
                 String first = String.valueOf(a);
                 if (Objects.equals("1", first)) {
-                    //来源是店家
+                    //来源是店家,该店家和上级店家共用一个渠道id
                     Relations relation = new Relations();
-                    //设置上下级关系
+                    String fatherId = eventKey.substring(9);
+                    Relations fathRelation = relationsMapper.selectRelation(fatherId);
+                    String serviceId = fathRelation.getServiceId();
+                    //设置用户关系
                     relation.setUserId(fromUserName);
-                    relation.setFatherId(eventKey.substring(9));
-
+                    relation.setFatherId(fatherId);
+                    relation.setServiceId(serviceId);
                     //1、判断用户关系是否存在
                     Relations isRelation = relationsMapper.selectRelation(fromUserName);
                     if (Objects.equals(null, isRelation)) {
@@ -123,7 +127,7 @@ public class WechatCoreServiceImpl implements WechatCoreService {
                     Relations relation = new Relations();
                     //设置渠道关系
                     relation.setUserId(fromUserName);
-                    relation.setServiceId(eventKey.substring(1));
+                    relation.setServiceId(eventKey.substring(9));
                     //1、判断用户关系是否存在(一级只有渠道，二级用户有上级和渠道)
                     Relations isRelation = relationsMapper.selectRelation(fromUserName);
                     if (Objects.equals(null, isRelation)) {
@@ -152,17 +156,24 @@ public class WechatCoreServiceImpl implements WechatCoreService {
             } else if ("unsubscribe".equals(event)) { // 取消订阅事件
 //                    // todo 处理取消订阅事件
             } else if ("SCAN".equals(event)) {
+
+
                 System.out.println("已关注进入");
                 // 已关注扫描二维码事件
                 //1、判断二维码来源（1--店家、2--渠道负责人）
                 char a = eventKey.charAt(0);
                 String first = String.valueOf(a);
                 if (Objects.equals("1", first)) {
-                    //来源是店家
-                    Relations relation = new Relations();//设置上下级关系
+                    // 来源是店家
+                    // 1.店家的关系数据，使用同一个渠道ID
+                    Relations fatherRela = relationsMapper.selectRelation(eventKey.substring(1));
+                    String serviceId = fatherRela.getServiceId();
+
+                    Relations relation = new Relations();//设置关系数据
                     relation.setUserId(fromUserName);
-                    relation.setFatherId(eventKey.substring(9));
-                    //1、判断用户关系是否存在
+                    relation.setFatherId(eventKey.substring(1));
+                    relation.setServiceId(serviceId);
+                    // 2. 判断用户关系是否存在
                     Relations isRelation = relationsMapper.selectRelation(fromUserName);
                     if (Objects.equals(null, isRelation)) {
                         //1.1 不存在，就存储
@@ -172,7 +183,7 @@ public class WechatCoreServiceImpl implements WechatCoreService {
                             respContent = "用户上下级关系未形成，医美通：http://m.superstar.vc";
                         }
                     } else {
-                        // 1.2 关系存在，返回医美通网址
+                        // 2.2 关系存在，返回医美通网址
                         respContent = "医美通系统：http://m.superstar.vc";
                     }
                 } else if (Objects.equals(2, first)) {
@@ -221,14 +232,14 @@ public class WechatCoreServiceImpl implements WechatCoreService {
                             MyToken myToken = myTokenMapper.selectOne();
                             String accessToken = myToken.getAccessToken();
 
-                            TreeMap<String, String> params = new TreeMap<>();
+                            TreeMap<String, String> params = new TreeMap();
                             params.put("access_token", accessToken);
                             // output data
-                            Map<String, String> intMap = new HashMap<>();
+                            Map<String, String> intMap = new HashMap();
                             intMap.put("scene_str", fromUserName);
-                            Map<String, Map<String, String>> mapMap = new HashMap<>();
+                            Map<String, Map<String, String>> mapMap = new HashMap();
                             mapMap.put("scene", intMap);
-                            Map<String, Object> paramsMap = new HashMap<>();
+                            Map<String, Object> paramsMap = new HashMap();
                             paramsMap.put("action_name", "QR_LIMIT_STR_SCENE");
                             paramsMap.put("action_info", mapMap);
                             String data = JSONObject.toJSONString(paramsMap);
