@@ -46,12 +46,15 @@ public class WxUserController {
 
         // 用户同意授权后，能获取到code
         String code = request.getParameter("code");
+        String state= request.getParameter("state");
+
+
 
         // 用户同意授权
         // 获取网页授权access_token
         WeixinOauth2Token weixinOauth2Token = AdvancedUtil.getOauth2AccessToken(App.APPID, App.APPSECRET, code);
         if (null == weixinOauth2Token) {
-            return new RespObj(800, "error", 0, null);
+            return new RespObj(800, "网页授权出错", 0, null);
         } else {
             // 网页授权接口访问凭证
             String accessToken = weixinOauth2Token.getAccessToken();
@@ -93,9 +96,9 @@ public class WxUserController {
         String openId = request.getText();
         User user = userService.getUser(openId);
         if (Objects.equals(null, user)) {
-            return RespObj.error();
+            return new RespObj(800,"用户数据不存在",0,null);
         } else {
-            return new RespObj(200, "success",user.getUserStatus(), user);
+            return new RespObj(200, "用户数据存在",user.getUserStatus(), user);
         }
     }
 

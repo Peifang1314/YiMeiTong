@@ -20,7 +20,7 @@
     <!-- ================= 调度触发器 ======================== -->
     <bean id="CronTriggerBean_updateTokenJob" class="org.springframework.scheduling.quartz.CronTriggerFactoryBean">
         <property name="jobDetail" ref="SpringQtzJobMethod_UpdateTokenJob"></property>
-        <property name="cronExpression" value="0 0/10 * * * ?"></property><!--1小时触发一次-->
+        <property name="cronExpression" value="0 0/30 * * * ?"></property><!--半小时触发一次-->
     </bean>
     <!-- ======================== 调度工厂 ======================== -->
     <bean id="SpringJobSchedulerFactoryBean"

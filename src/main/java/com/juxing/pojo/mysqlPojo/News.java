@@ -13,6 +13,8 @@ public class News {
 
     private String newsContentHtml;
 
+    private Integer flag;
+
     private Date newsCreatetime;
 
     public Integer getId() {
@@ -53,6 +55,14 @@ public class News {
 
     public void setNewsContentHtml(String newsContentHtml) {
         this.newsContentHtml = newsContentHtml == null ? null : newsContentHtml.trim();
+    }
+
+    public Integer getFlag() {
+        return flag;
+    }
+
+    public void setFlag(Integer flag) {
+        this.flag = flag;
     }
 
     public Date getNewsCreatetime() {

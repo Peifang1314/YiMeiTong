@@ -1,15 +1,15 @@
 package com.juxing.pojo.mysqlPojo;
 
-import java.util.Date;
-
 public class Designer {
     private Integer id;
+
+    private String designerId;
 
     private String designerName;
 
     private String designerPhone;
 
-    private Date createtime;
+    private String createtime;
 
     private Integer flag;
 
@@ -19,6 +19,14 @@ public class Designer {
 
     public void setId(Integer id) {
         this.id = id;
+    }
+
+    public String getDesignerId() {
+        return designerId;
+    }
+
+    public void setDesignerId(String designerId) {
+        this.designerId = designerId == null ? null : designerId.trim();
     }
 
     public String getDesignerName() {
@@ -37,12 +45,12 @@ public class Designer {
         this.designerPhone = designerPhone == null ? null : designerPhone.trim();
     }
 
-    public Date getCreatetime() {
+    public String getCreatetime() {
         return createtime;
     }
 
-    public void setCreatetime(Date createtime) {
-        this.createtime = createtime;
+    public void setCreatetime(String createtime) {
+        this.createtime = createtime == null ? null : createtime.trim();
     }
 
     public Integer getFlag() {

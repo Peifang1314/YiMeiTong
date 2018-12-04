@@ -33,7 +33,7 @@ public interface UserMapper {
     List<User> selectUnableUserByServ(List openList);
 
     /**
-     * 渠道未审核的店家
+     * 渠道未审核的店家、我的店家
      *
      * @param openId 渠道的openId
      * @param status 店家状态
@@ -52,6 +52,14 @@ public interface UserMapper {
      */
     List<User> selectUsersByName(@Param("openList") List openList, @Param("shopName") String shopName);
 
+    /**
+     * 渠道-我的店家-根据电话/姓名查找
+     * @param openId 渠道的openId
+     * @param text 电话/姓名
+     * @param page 第X页
+     * @return 模糊查询（电话/姓名）的用户信息
+     */
+    List<User> selectByText2(@Param("openId") String openId,@Param("text") String text,@Param("page") int page);
 
     //更改用户状态
     int updateUserStatus(User user);

@@ -6,9 +6,11 @@ import com.juxing.common.vo.RespObj;
 import com.juxing.mapper.NewsMapper;
 import com.juxing.pojo.mysqlPojo.News;
 import com.juxing.service.NewsServcie;
+import com.sun.org.apache.bcel.internal.generic.NEW;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
@@ -52,6 +54,19 @@ public class NewsServiceImpl implements NewsServcie {
             return RespObj.error();
         }else {
             return new RespObj(200,"新闻",1,news);
+        }
+    }
+
+    @Override
+    public RespObj getNewsByFlag(int flag, int page) {
+        List list = new ArrayList();
+        list.add(flag);
+        list.add(3);
+        List<News> newsList = newsMapper.selectNewsByFlag(list, page);
+        if (Objects.equals(null,newsList)){
+            return RespObj.error();
+        }else {
+            return RespObj.setObjs(newsList);
         }
     }
 }

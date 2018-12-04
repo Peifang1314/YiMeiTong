@@ -3,6 +3,7 @@ package com.juxing.controller.common;
 import com.juxing.common.vo.Resp;
 import com.juxing.common.vo.RespObj;
 import com.juxing.pojo.mysqlPojo.News;
+import com.juxing.pojo.reqPojo.RequestList;
 import com.juxing.pojo.reqPojo.RequestOne;
 import com.juxing.service.NewsServcie;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -45,6 +46,14 @@ public class NewsController {
     public RespObj getOneNews(@RequestBody RequestOne request) {
         int id = Integer.valueOf(request.getText());
         return newsServcie.getOneNews(id);
+    }
+
+    @RequestMapping("/getNewsByStatus")
+    public RespObj getNewsByStatus(@RequestBody RequestList request) {
+        int flag = request.getNum();
+        int page = request.getPage();
+
+        return newsServcie.getNewsByFlag(flag, page);
     }
 
 

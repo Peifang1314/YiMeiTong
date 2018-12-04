@@ -27,13 +27,21 @@ public interface OrdersMapper {
     List<Orders> selectByText(@Param("openId") String openId, @Param("text") String text, @Param("page") int page);
 
     /**
-     * 根据单号或者姓名查找
-     * @param openId 订单创建者的openId
-     * @param text 单号或者姓名
+     *
+     * @param openId
+     * @param text
      * @param page 第X页
      * @return 模糊查询出的订单
      */
-    List<Orders> selectByText2(@Param("openId") String openId, @Param("text") String text,@Param("num") int num, @Param("page") int page);
+    /**
+     * 根据单号或者姓名查找
+     * @param openId 订单创建者的openId
+     * @param text 单号或者姓名
+     * @param status 订单状态
+     * @param page 第X页
+     * @return 模糊查询，不同状态的订单
+     */
+    List<Orders> selectByText2(@Param("openId") String openId, @Param("text") String text,@Param("status") int status, @Param("page") int page);
 
     /**
      * @param cusPhone 消费者姓名
@@ -104,7 +112,22 @@ public interface OrdersMapper {
      */
     List<Orders> selectByServiceOpenid(String openId);
 
+
+
+    /**
+     * 财务要审核的订单
+     * @return 状态为2的订单
+     */
+    List<Orders> selectOrdersToFinance();
+
     int updateByOid(Orders order);
+
+    /**
+     * 财务人员审核订单
+     * @param oid 订单的oid
+     * @return 审核状态 200/800
+     */
+    int updateOrderByFinance(String oid);
 
     Orders selectByPrimaryKey(Integer id);
 

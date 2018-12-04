@@ -65,7 +65,6 @@ public class UserController {
      */
     @RequestMapping("/getUsers")
     public RespObj getUsers(@RequestBody RequestOne searchRequest) {
-
         return userService.getUsers(searchRequest);
     }
 
@@ -164,11 +163,12 @@ public class UserController {
     /**
      * 手机号码检测
      *
-     * @param phone 要检测的号码
+     * @param request 要检测的号码
      * @return
      */
     @RequestMapping("/phoneCheck")
-    public RespObj phoneCheck(String phone) {
+    public Resp phoneCheck(@RequestBody RequestOne request) {
+        String phone = request.getText();
         return userService.phoneCheck(phone);
     }
 
@@ -180,6 +180,6 @@ public class UserController {
      */
     @RequestMapping("/test")
     public Resp test() {
-        return new Resp(200, "success", 1);
+        return new Resp(200, "测试成功", 1);
     }
 }

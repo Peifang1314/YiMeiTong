@@ -25,6 +25,14 @@ public interface NewsMapper {
      */
     List<News> selectAllNews();
 
+    /**
+     * 展示不同用户的新闻列表
+     * @param list flag 新闻标记码 1 店家新闻 2 渠道新闻 3 两者.
+     * @param page page 第X页
+     * @return 新闻数据
+     */
+    List<News> selectNewsByFlag(@Param("list") List list,@Param("page") int page);
+
 
     int updateByPrimaryKey(News record);
 }

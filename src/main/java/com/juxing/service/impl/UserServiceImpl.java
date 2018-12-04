@@ -14,6 +14,7 @@ import com.juxing.pojo.mysqlPojo.Relations;
 import com.juxing.pojo.mysqlPojo.User;
 import com.juxing.pojo.reqPojo.RequestOne;
 import com.juxing.pojo.wechatPojo.UserInfo;
+import com.juxing.pojo.wechatPojo.sysUser;
 import com.juxing.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -44,7 +45,7 @@ public class UserServiceImpl implements UserService {
     /**
      * 用户注册
      *
-     * @param user
+     * @param user 注册的用户
      * @return
      */
     @Override
@@ -53,7 +54,9 @@ public class UserServiceImpl implements UserService {
         String userPhone = user.getUserPhone();
         Integer userRole = user.getUserRole();
         String userOpenid = user.getUserOpenid();
-
+        // 管理员信息
+        User servicer = userMapper.selectByOpenid(sysUser.openId);
+        // 判断用户是否已经存在
         User user2 = userMapper.selectByOpenid(userOpenid);
         // 用户注册先判断用户角色 1 店家 2 渠道
 
@@ -65,30 +68,36 @@ public class UserServiceImpl implements UserService {
                 String serviceOpenid = relation.getServiceId();
                 if (serviceOpenid != null) {
                     // 渠道的信息实体类存在
-                    User servicer = userMapper.selectByOpenid(relation.getServiceId());
+                    User theServicer = userMapper.selectByOpenid(relation.getServiceId());
+
                     // 用户渠道的信息
+                    user.setServiceOpenid(theServicer.getUserOpenid());
+                    user.setServiceId(theServicer.getUserId());
+                    user.setServiceName(theServicer.getUserName());
+                    user.setServicePhone(theServicer.getUserPhone());
+                }
+            } else {
+                // 店家直接注册，管理员信息作为渠道的值
+                String serviceId = sysUser.openId;
+                Relations theRela = new Relations();
+                theRela.setUserId(userOpenid);
+                theRela.setServiceId(serviceId);
+                relationsMapper.insert(theRela);
+
+                // 管理员信息不为空
+                if (servicer != null) {
+                    // 管理员信息作为用户渠道的信息
                     user.setServiceOpenid(servicer.getUserOpenid());
                     user.setServiceId(servicer.getUserId());
                     user.setServiceName(servicer.getUserName());
                     user.setServicePhone(servicer.getUserPhone());
                 }
-            } else {
-                // 店家直接注册，管理员信息作为上级和渠道的值
-                String fatherId = "管理员ID";
-                String serviceId = "管理员ID";
-                Relations theRela = new Relations();
-                theRela.setUserId(userOpenid);
-                theRela.setFatherId(fatherId);
-                theRela.setServiceId(serviceId);
-                relationsMapper.insert(theRela);
             }
         } else {
             // 2 渠道人员注册 管理员信息作为上级和渠道的值
-            String fatherId = "管理员ID";
-            String serviceId = "管理员ID";
+            String serviceId = sysUser.openId;
             Relations theRela = new Relations();
             theRela.setUserId(userOpenid);
-            theRela.setFatherId(fatherId);
             theRela.setServiceId(serviceId);
             // 2.1 查看关系表
             Relations relation = relationsMapper.selectRelation(userOpenid);
@@ -100,6 +109,16 @@ public class UserServiceImpl implements UserService {
                 // （解决渠道人员扫描其他带参二维码进入公众号，关系表内数据错误的情况）
                 relationsMapper.updateAllRelation(theRela);
             }
+
+            // 管理员信息不为空
+            if (servicer != null) {
+                // 管理员信息作为用户渠道的信息
+                user.setServiceOpenid(servicer.getUserOpenid());
+                user.setServiceId(servicer.getUserId());
+                user.setServiceName(servicer.getUserName());
+                user.setServicePhone(servicer.getUserPhone());
+            }
+
         }
         if (null != user2) {
             // 用户存在
@@ -199,12 +218,12 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public RespObj phoneCheck(String phone) {
+    public Resp phoneCheck(String phone) {
         User user = userMapper.selectByPhone(phone);
         if (null == user) {
-            return new RespObj(200, "号码已被使用", 1, null);
+            return new Resp(200, "号码已被使用", 1);
         } else {
-            return new RespObj(800, "号码不可用", 0, null);
+            return new Resp(800, "号码不可用", 0);
         }
     }
 
@@ -228,7 +247,6 @@ public class UserServiceImpl implements UserService {
     public RespObj getUsers(RequestOne request) {
         String text = request.getText();
         List<User> lists = userMapper.selectByText(text);
-        System.out.println(lists);
         if (null == lists) {
             return new RespObj(800, "error", 0, null);
         } else {

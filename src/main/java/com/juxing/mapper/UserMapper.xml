@@ -115,6 +115,15 @@
         and user_shopname like "%"#{shopName}"%"
     </select>
 
+    <select id="selectByText2" resultMap="BaseResultMap">
+        select
+        <include refid="Base_Column_List"/>
+        from ymt_user
+        where service_openid = #{openId}
+        and user_shopname like "%"#{text}"%" or user_phone like "%"#{text}"%"
+        LIMIT 10 offset ${(page-1)*10};
+    </select>
+
     <update id="updateUser" parameterType="com.juxing.pojo.mysqlPojo.User">
         update ymt_user
         set  user_nickname = #{userNickname,jdbcType=VARCHAR},

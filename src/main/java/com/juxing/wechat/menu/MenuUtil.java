@@ -13,11 +13,17 @@ import com.juxing.pojo.wechatPojo.Token;
 public class MenuUtil {
 
     public static String createButton() {
-        ClickButton btn1 = new ClickButton();
+//        ClickButton btn1 = new ClickButton();
+//        btn1.setName("巨星集团");
+//        btn1.setType("view");
+//        //主页事件
+//        btn1.setKey("V1001_HOME");
+
+        ViewButton btn1 = new ViewButton();
         btn1.setName("巨星集团");
-        btn1.setType("click");
-        //主页事件
-        btn1.setKey("V1001_HOME");
+        btn1.setType("view");
+        btn1.setUrl("https://m.superstar.vc?a=1");
+
 
         ClickButton btn2 = new ClickButton();
         btn2.setName("我的二维码");
@@ -29,12 +35,12 @@ public class MenuUtil {
         ViewButton btn31 = new ViewButton();
         btn31.setName("店家注册");
         btn31.setType("view");
-        btn31.setUrl("http://m.superstar.vc");
+        btn31.setUrl("https://m.superstar.vc");
 
         ViewButton btn32 = new ViewButton();
         btn32.setName("渠道注册");
         btn32.setType("view");
-        btn32.setUrl("http://m.superstar.vc/flinto");
+        btn32.setUrl("https://m.superstar.vc/flinto");
 
         //复合按钮包含2个click类型的按钮
         ComplexButton btn3 = new ComplexButton();

@@ -3,11 +3,13 @@ package com.juxing.controller.worker;
 import com.juxing.common.vo.Resp;
 import com.juxing.common.vo.RespObj;
 import com.juxing.pojo.mysqlPojo.Orders;
+import com.juxing.pojo.reqPojo.RequestList;
 import com.juxing.pojo.reqPojo.RequestOne;
 import com.juxing.service.WorkerService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.Map;
@@ -51,10 +53,43 @@ public class WorkerController {
     }
 
     /**
+     * 渠道-我的店家
+     *
+     * @param request openId 渠道的openId status 店家的状态 page 第X页
+     * @return
+     */
+    @RequestMapping("/getShopsOfMy")
+    public RespObj getShopsOfMy(@RequestBody RequestList request) {
+        String openId = request.getText();
+        int status = request.getNum();
+        int page = request.getPage();
+        return workerService.getShopsOfMy(openId, status, page);
+    }
+
+    /**
+     *
+     *
+     * @return
+     */
+    /**
+     * 渠道-我的店家-输入电话或者店名查找
+     * @param request openId 渠道的openId, text 电话/姓名  page 第X页
+     * @return 店铺的信息（店名、订单总返款金额）
+     */
+    @RequestMapping("/getMyShopsByText")
+    public RespObj getMyShopsByText(@RequestBody RequestList request) {
+        String openId = request.getText();
+        String text = request.getText1();
+        int page = request.getPage();
+        return workerService.getMyShopsByText(openId, text, page);
+    }
+
+
+    /**
      * 修改订单
      *
      * @param request 请求实体类，订单的ID
-     * @return
+     * @return 单一的一条订单
      */
     @RequestMapping("/getOneOrder")
     public RespObj getOneOrder(@RequestBody RequestOne request) {
@@ -63,9 +98,10 @@ public class WorkerController {
     }
 
     /**
-     * 订单审核
+     * 订单审核功能
+     *
      * @param order 要审核的订单
-     * @return
+     * @return 审核状态 200/800
      */
     @RequestMapping("/getOrderPass")
     public Resp getOrderPass(@RequestBody Orders order) {

@@ -41,11 +41,11 @@ public interface OrderService {
      * 根据单号或者姓名查找
      * @param openId 订单创建者的openId
      * @param text 单号/姓名
-     * @param num 订单状态
+     * @param status 订单状态
      * @param page 第X页
      * @return 模糊查询的订单信息
      */
-    RespObj getOrdersByText2(String openId, String text,int num, int page);
+    RespObj getOrdersByText2(String openId, String text,int status, int page);
 
 
     /**
@@ -70,6 +70,18 @@ public interface OrderService {
      */
     RespObj getOrdersByOid(String openid, String oid);
 
+    /**
+     * 所有需要审核的订单（渠道已审核）
+     * @return 提交状态为2的订单
+     */
+    RespObj getOrdersToFinance();
+
+    /**
+     * 财务审核订单
+     * @param oid 订单id
+     * @return 审核状态 200/800
+     */
+    Resp updateOrderByFinance(String oid);
 
 
 }

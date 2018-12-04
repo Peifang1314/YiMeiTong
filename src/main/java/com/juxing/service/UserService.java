@@ -104,8 +104,17 @@ public interface UserService {
     //发送手机验证码
     RespObj getPhoneCode(PhoneCode phoneCode);
 
-    //号码是否使用检查
-    RespObj phoneCheck(String phone);
+    /**
+     *
+     */
+
+
+    /**
+     * 号码是否已经被注册
+     * @param phone 要检测的手机号码
+     * @return
+     */
+    Resp phoneCheck(String phone);
 
 
 }

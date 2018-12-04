@@ -100,12 +100,12 @@ public class WechatCoreServiceImpl implements WechatCoreService {
                 char a = trueKey.charAt(0);
                 String first = String.valueOf(a);
                 if (Objects.equals("1", first)) {
-                    //来源是店家,该店家和上级店家共用一个渠道id
+                    // 来源是店家,该店家和上级店家共用一个渠道id
                     Relations relation = new Relations();
                     String fatherId = eventKey.substring(9);
                     Relations fathRelation = relationsMapper.selectRelation(fatherId);
                     String serviceId = fathRelation.getServiceId();
-                    //设置用户关系
+                    // 设置用户关系
                     relation.setUserId(fromUserName);
                     relation.setFatherId(fatherId);
                     relation.setServiceId(serviceId);
@@ -114,13 +114,13 @@ public class WechatCoreServiceImpl implements WechatCoreService {
                     if (Objects.equals(null, isRelation)) {
                         //1.1 不存在，就存储
                         if (relationsMapper.insert(relation) > 0) {
-                            respContent = "医美通系统：http://m.superstar.vc";
+                            respContent = "医美通系统：https://m.superstar.vc";
                         } else {
-                            respContent = "用户上下级关系未形成，医美通：http://m.superstar.vc";
+                            respContent = "用户上下级关系未形成，医美通：https://m.superstar.vc";
                         }
                     } else {
                         // 1.2 关系存在，返回注册网址
-                        respContent = "医美通系统：http://m.superstar.vc";
+                        respContent = "医美通系统：https://m.superstar.vc";
                     }
                 } else if (Objects.equals("2", first)) {
                     //来源是渠道，渠道关系形成
@@ -133,42 +133,31 @@ public class WechatCoreServiceImpl implements WechatCoreService {
                     if (Objects.equals(null, isRelation)) {
                         // 1.1 用户关系不存在，用户是一级用户
                         if (relationsMapper.insert(relation) > 0) {
-                            respContent = "医美通系统：http://m.superstar.vc";
+                            respContent = "医美通系统：https://m.superstar.vc";
                         } else {
-                            respContent = "用户渠道关系未形成，医美通：http://m.superstar.vc";
+                            respContent = "用户渠道关系未形成，医美通：https://m.superstar.vc";
                         }
                     } else {
                         // 1.2 用户关系存在，用户是二级用户
-                        if (Objects.equals(null, isRelation.getServiceId())) {
-                            // 1.2.1 用户渠道关系是否存在
-                            // 渠道关系不存在，更新渠道关系
-                            if (relationsMapper.updateServiceRelation(relation) > 0) {
-                                respContent = "医美通系统：http://m.superstar.vc";
-                            } else {
-                                respContent = "用户渠道关系未形成，医美通：http://m.superstar.vc";
-                            }
-                        } else {
-                            //1.2.2 渠道关系存在
-                            respContent = "医美通系统：http://m.superstar.vc";
-                        }
+                        respContent = "医美通系统：https://m.superstar.vc";
                     }
                 }// 订阅事件 或 未关注扫描二维码事件 结束**/
             } else if ("unsubscribe".equals(event)) { // 取消订阅事件
 //                    // todo 处理取消订阅事件
             } else if ("SCAN".equals(event)) {
 
-
                 System.out.println("已关注进入");
                 // 已关注扫描二维码事件
                 //1、判断二维码来源（1--店家、2--渠道负责人）
                 char a = eventKey.charAt(0);
                 String first = String.valueOf(a);
+                System.out.println("带参首位："+first);
                 if (Objects.equals("1", first)) {
-                    // 来源是店家
+                    // 扫码来源是店家
                     // 1.店家的关系数据，使用同一个渠道ID
                     Relations fatherRela = relationsMapper.selectRelation(eventKey.substring(1));
                     String serviceId = fatherRela.getServiceId();
-
+                    // 设置关系数据
                     Relations relation = new Relations();//设置关系数据
                     relation.setUserId(fromUserName);
                     relation.setFatherId(eventKey.substring(1));
@@ -178,42 +167,33 @@ public class WechatCoreServiceImpl implements WechatCoreService {
                     if (Objects.equals(null, isRelation)) {
                         //1.1 不存在，就存储
                         if (relationsMapper.insert(relation) > 0) {
-                            respContent = "医美通系统：http://m.superstar.vc";
+                            respContent = "注册医美通：https://m.superstar.vc";
                         } else {
-                            respContent = "用户上下级关系未形成，医美通：http://m.superstar.vc";
+                            respContent = "用户上下级关系未形成，进入医美通：https://m.superstar.vc";
                         }
                     } else {
                         // 2.2 关系存在，返回医美通网址
-                        respContent = "医美通系统：http://m.superstar.vc";
+                        respContent = "医美通系统：https://m.superstar.vc";
                     }
-                } else if (Objects.equals(2, first)) {
+                } else if (Objects.equals("2", first)) {
                     // 来源是渠道，渠道关系形成
                     Relations relation = new Relations();
                     // 设置渠道关系
                     relation.setUserId(fromUserName);
                     relation.setServiceId(eventKey.substring(1));
+
                     // 1、判断关系是否存在
                     Relations isRelation = relationsMapper.selectRelation(fromUserName);
                     // 1.1 用户关系不存在，用户是一级用户，存储渠道关系
                     if (Objects.equals(null, isRelation)) {
                         if (relationsMapper.insert(relation) > 0) {
-                            respContent = "医美通系统：http://m.superstar.vc";
+                            respContent = "注册医美通：https://m.superstar.vc";
                         } else {
-                            respContent = "渠道关系未形成，医美通系统：http://m.superstar.vc";
+                            respContent = "渠道关系未形成，医美通系统：https://m.superstar.vc";
                         }
                     } else {
-                        // 1.2 用户关系存在，判断渠道关系
-                        if (Objects.equals(null, isRelation.getServiceId())) {
-                            // 用户为二级用户，渠道关系没有，更新渠道关系
-                            if (relationsMapper.updateServiceRelation(relation) > 0) {
-                                respContent = "医美通系统：http://m.superstar.vc";
-                            } else {
-                                respContent = "渠道关系未形成，医美通系统：http://m.superstar.vc";
-                            }
-                        } else {
-                            // 渠道关系存在，返回医美通网址
-                            respContent = "医美通系统：http://m.superstar.vc";
-                        }
+                        // 1.2 用户关系存在，返回医美通网址
+                        respContent = "医美通系统：http://m.superstar.vc";
                     }
                 }
             } else if ("CLICK".equals(event)) {

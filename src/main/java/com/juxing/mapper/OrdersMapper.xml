@@ -102,7 +102,7 @@
         select
         <include refid="Base_Column_List"/>
         from
-        (select * from ymt_orders where order_refer = #{openId} and order_status = #{num}) t
+        (select * from ymt_orders where order_refer = #{openId} and order_status = #{status}) t
         where cus_name like "%"#{text}"%" or order_id like "%"#{text}"%"
         order by createtime desc
         LIMIT 10 offset ${(page-1)*10}
@@ -180,6 +180,13 @@
         and order_substatus = 1;
     </select>
 
+    <select id="selectOrdersToFinance" resultMap="BaseResultMap">
+        select
+        <include refid="Base_Column_List"/>
+        from ymt_orders
+        where order_substatus = 2;
+    </select>
+
     <update id="updateByOid" parameterType="com.juxing.pojo.mysqlPojo.Orders">
         update ymt_orders
         set order_project = #{orderProject,jdbcType=VARCHAR},
@@ -196,6 +203,12 @@
           order_notes = #{orderNotes,jdbcType=VARCHAR},
           order_second_notes = #{orderSecondNotes,jdbcType=VARCHAR},
           is_sync = #{isSync,jdbcType=INTEGER}
+        where order_id = #{orderId,jdbcType=VARCHAR}
+    </update>
+
+    <update id="updateOrderByFinance">
+        update ymt_orders
+        set order_substatus = 3
         where order_id = #{orderId,jdbcType=VARCHAR}
     </update>
 

@@ -1,5 +1,6 @@
 package com.juxing.service.impl;
 
+import com.juxing.common.vo.MyShops;
 import com.juxing.common.vo.Resp;
 import com.juxing.common.vo.RespObj;
 import com.juxing.mapper.NewsMapper;
@@ -38,7 +39,6 @@ public class WorkerServiceImpl implements WorkerService {
         Map retMap = new HashMap();
         // 1. 未受理新增店家
         List<User> shopUser = null;
-
         // 1.1 所有下级店家
         List<Relations> relations = relationsMapper.selectUserList(openId);
         // 1.2 下级店家的openId
@@ -55,6 +55,7 @@ public class WorkerServiceImpl implements WorkerService {
         } else {
             retMap.put("shopUser", shopUser.size());
         }
+
 
         // 2. 未受理预约客户
         List<Orders> ordersList = ordersMapper.selectByServiceOpenid(openId);
@@ -111,6 +112,80 @@ public class WorkerServiceImpl implements WorkerService {
     }
 
     @Override
+    public RespObj getShopsOfMy(String openId, int status, int page) {
+        int i = 0;
+        MyShops myShop = null;
+        List<MyShops> myShopsList = new ArrayList();
+        List<User> userList = userMapper.selectUsersByStatus(openId, status, page);
+        System.out.println("userList:" + userList.size());
+        if (userList.isEmpty() || Objects.equals(null, userList)) {
+            // 渠道下没有店铺
+            return RespObj.error();
+        } else {
+            for (int j = 0; j < userList.size(); j++) {
+                // 店铺的openId 和 店名
+                myShop = new MyShops();
+                myShop.setOpenId(userList.get(j).getUserOpenid());
+                myShop.setShopName(userList.get(j).getUserShopname());
+
+                // 下级店铺的所有订单返款金额
+                List<Orders> ordersList = ordersMapper.selectAllOrders2(userList.get(j).getUserOpenid(), 8);
+                if (Objects.equals(null, ordersList) || ordersList.isEmpty()) {
+                    myShop.setNum(i);
+                } else {
+                    for (Orders order : ordersList) {
+                        i = i + Integer.valueOf(order.getOrderDismoney());
+                        myShop.setNum(i);
+                    }
+                }
+                myShopsList.add(myShop);
+            }
+            if (Objects.equals(null, myShopsList)) {
+                return RespObj.error();
+            } else {
+                return RespObj.setObjs(myShopsList);
+            }
+        }
+    }
+
+    @Override
+    public RespObj getMyShopsByText(String openId, String text, int page) {
+        int i = 0;
+        List<User> userList = userMapper.selectByText2(openId, text, page);
+        MyShops myShop = null;
+        List<MyShops> myShopsList = new ArrayList();
+        if (userList.isEmpty() || Objects.equals(null, userList)) {
+            // 模糊查询没有数据
+            return RespObj.error();
+        } else {
+            for (int j = 0; j < userList.size(); j++) {
+                // 店铺的openId 和 店名
+                myShop = new MyShops();
+                myShop.setOpenId(userList.get(j).getUserOpenid());
+                myShop.setShopName(userList.get(j).getUserShopname());
+
+                // 下级店铺的所有订单返款金额
+                List<Orders> ordersList = ordersMapper.selectAllOrders2(userList.get(j).getUserOpenid(), 8);
+                if (Objects.equals(null, ordersList) || ordersList.isEmpty()) {
+                    myShop.setNum(i);
+                } else {
+                    for (Orders order : ordersList) {
+                        i = i + Integer.valueOf(order.getOrderDismoney());
+                        myShop.setNum(i);
+                    }
+                }
+                myShopsList.add(myShop);
+            }
+            if (Objects.equals(null, myShopsList)) {
+                return RespObj.error();
+            } else {
+                return RespObj.setObjs(myShopsList);
+            }
+        }
+    }
+
+
+    @Override
     public RespObj getOneOrder(String oid) {
         Orders order = ordersMapper.selectOne(oid);
         if (Objects.equals(null, order)) {
@@ -124,15 +199,15 @@ public class WorkerServiceImpl implements WorkerService {
     public Resp getOrderPass(Orders order) {
         Orders theOrder = ordersMapper.selectOne(order.getOrderId());
         int orderSubStatus = theOrder.getOrderSubstatus();
-        if (Objects.equals(2,orderSubStatus)){
+        if (Objects.equals(2, orderSubStatus)) {
             //渠道已审核订单，提交
-            return new Resp(800,"订单已提交,请勿重复提交",0);
-        }else {
+            return new Resp(800, "订单已提交至财务,请勿重复提交", 0);
+        } else {
             int i = ordersMapper.updateByOid(order);
-            if (i>0){
+            if (i > 0) {
                 return Resp.ok();
-            }else {
-                return new Resp(800,"审核失败，联系管理员",0);
+            } else {
+                return new Resp(800, "审核失败，联系管理员", 0);
             }
         }
     }

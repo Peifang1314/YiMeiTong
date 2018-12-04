@@ -32,5 +32,13 @@ public interface NewsServcie {
      */
     RespObj getOneNews(Integer id);
 
+    /**
+     * 展示不同用户的新闻列表
+     * @param flag 新闻标记码 1 店家新闻 2 渠道新闻 3 两者
+     * @param page 第X页
+     * @return 新闻数据
+     */
+    RespObj getNewsByFlag(int flag, int page);
+
 
 }

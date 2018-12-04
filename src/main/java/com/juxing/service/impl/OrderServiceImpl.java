@@ -174,8 +174,8 @@ public class OrderServiceImpl implements OrderService {
     }
 
     @Override
-    public RespObj getOrdersByText2(String openId, String text, int num, int page) {
-        List<Orders> ordersList = ordersMapper.selectByText2(openId, text, num, page);
+    public RespObj getOrdersByText2(String openId, String text, int status, int page) {
+        List<Orders> ordersList = ordersMapper.selectByText2(openId, text, status, page);
         if (Objects.equals(null, ordersList)) {
             return RespObj.error();
         } else {
@@ -205,5 +205,22 @@ public class OrderServiceImpl implements OrderService {
         }
     }
 
+    @Override
+    public RespObj getOrdersToFinance() {
+        List<Orders> ordersList = ordersMapper.selectOrdersToFinance();
+        if (Objects.equals(null,ordersList)){
+            return RespObj.error();
+        }else {
+            return RespObj.setObjs(ordersList);
+        }
+    }
 
+    @Override
+    public Resp updateOrderByFinance(String oid) {
+        if (ordersMapper.updateOrderByFinance(oid)>0){
+            return Resp.ok();
+        }else {
+            return Resp.error();
+        }
+    }
 }
